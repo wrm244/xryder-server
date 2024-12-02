@@ -64,7 +64,7 @@ public class AccountServiceImpl implements AccountService {
                 .avatar(user.getAvatar())
                 .mobile(user.getMobile())
                 .email(user.getEmail())
-                .notificationCount(unreadCount)
+                .newMails(unreadCount)
                 .loginDate(user.getLoginDate())
                 .roles(roles)
                 .permissions(permissions)

@@ -27,7 +27,7 @@ public class UserVO {
     private String email;
     private String mobile;
     private String avatar;
-    private Long notificationCount;
+    private Long newMails;
     private boolean enabled;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private LocalDateTime loginDate;
