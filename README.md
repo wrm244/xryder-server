@@ -8,3 +8,8 @@
 - Spring Data Jpa
 - Spring AI
 
+## 如何使用
+1. 执行根目录下sql文件夹下的sql文件，创建响应的表和导入数据。
+2. 配置zhipu ai的appkey环境变量（或者替换为open ai 的appkey）
+3. 启动项目（注意，本项目使用的是java21，启动前需要确保机器已正确配置jdk21）
+4. 自动初始化管理员账号。cn.xryder.base.config.DataInitializer为账户初始化类，可以查看管理员账号密码。
