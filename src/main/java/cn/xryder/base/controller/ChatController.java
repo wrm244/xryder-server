@@ -1,6 +1,7 @@
 package cn.xryder.base.controller;
 
 import cn.xryder.base.common.FileReader;
+import cn.xryder.base.config.OperationLog;
 import cn.xryder.base.domain.ResultJson;
 import cn.xryder.base.exception.custom.BadRequestException;
 import cn.xryder.base.exception.custom.ServerException;
@@ -73,6 +74,7 @@ public class ChatController {
         return Map.of("generation", chatModel.call(message));
     }
 
+    @OperationLog("发起对话")
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> stream(@RequestParam String message,
                                @RequestParam String conversationId,

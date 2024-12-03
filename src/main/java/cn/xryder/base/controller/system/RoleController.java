@@ -1,5 +1,6 @@
 package cn.xryder.base.controller.system;
 
+import cn.xryder.base.config.OperationLog;
 import cn.xryder.base.domain.PageResult;
 import cn.xryder.base.domain.ResultJson;
 import cn.xryder.base.domain.dto.system.RoleDTO;
@@ -26,6 +27,7 @@ public class RoleController {
         this.roleService = roleService;
     }
 
+    @OperationLog("添加角色")
     @PostMapping
     @PreAuthorize("hasAuthority('system:role:all')")
     public ResultJson<RoleVO> addRole(@Valid @RequestBody RoleDTO role, Principal principal) {
@@ -33,6 +35,7 @@ public class RoleController {
         return ResultJson.ok(createdRole);
     }
 
+    @OperationLog("修改角色信息")
     @PutMapping
     @PreAuthorize("hasAuthority('system:role:all')")
     public ResultJson<RoleVO> updateRole(@Valid @RequestBody RoleDTO role, Principal principal) {
@@ -59,6 +62,7 @@ public class RoleController {
         return ResultJson.ok(roles.getData());
     }
 
+    @OperationLog("删除角色")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('system:role:all')")
     public ResultJson<?> deleteRoleById(@PathVariable Long id) {
