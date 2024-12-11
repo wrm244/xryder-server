@@ -43,7 +43,7 @@ public class AccountController {
         return ResultJson.ok(accountInfo);
     }
 
-    @OperationLog("创建账户密码")
+    @OperationLog("修改账户密码")
     @PutMapping("/password")
     public ResultJson changePassword(Principal principal, @RequestBody PasswordChangeDTO passwordChange) throws Exception {
         String username = principal.getName();

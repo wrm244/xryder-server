@@ -144,12 +144,14 @@ public class UserServiceImpl implements UserService {
             throw new ResourceNotFoundException("用户不存在！");
         }
         if (roleSet.size() == 0) {
-            throw new BadRequestException("用户必须设置一个角色");
+            throw new BadRequestException("用户必须设置一个角色！");
         }
-        //如果修改的是admin账号，保证该账号有管理员角色
+        //不能修改管理员角色
         if (username.equals(Admin.username)) {
-            roleSet.add(SystemRoleEnum.ADMIN.getId());
+            throw new BadRequestException("不能修改管理员角色！");
         }
+        //不能设置用户角色为管理员角色
+        roleSet.remove(SystemRoleEnum.ADMIN.getId());
         userRoleRepo.deleteAllByUsername(username);
         List<UserRole> userRoleDOList = roleSet.stream().map(r -> {
             UserRole userRoleDO = new UserRole();
