@@ -34,7 +34,7 @@ public class DataInitializer {
                 admin.setPassword(passwordEncoder.encode(Admin.password)); // 使用密码编码器加密密码
                 admin.setEnabled(true);
                 userRepository.save(admin);
-
+                System.out.println(" admin password is: " + Admin.password);
                 // 角色1
                 Role role = new Role();
                 role.setId(SystemRoleEnum.ADMIN.getId());
