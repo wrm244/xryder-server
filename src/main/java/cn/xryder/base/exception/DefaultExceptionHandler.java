@@ -3,6 +3,7 @@ package cn.xryder.base.exception;
 import cn.xryder.base.domain.ResultCode;
 import cn.xryder.base.domain.ResultJson;
 import cn.xryder.base.exception.custom.*;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,7 +23,7 @@ public class DefaultExceptionHandler {
     }
 
     @ExceptionHandler({NotAllowedException.class})
-    public ResultJson<?> handleBadRequestException(NotAllowedException e) {
+    public ResultJson<?> handleNotAllowedException(NotAllowedException e) {
         return ResultJson.failure(ResultCode.BAD_REQUEST, e.getMessage());
     }
 
@@ -34,6 +35,11 @@ public class DefaultExceptionHandler {
     @ExceptionHandler({ResourceConflictException.class})
     public ResultJson<?> handleResourceConflictException(ResourceConflictException e) {
         return ResultJson.failure(ResultCode.CONFLICT, e.getMessage());
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResultJson<?> handleExpiredJwtException(ExpiredJwtException e) {
+        return ResultJson.failure(ResultCode.TOKEN_EXPIRED, e.getMessage());
     }
 
     @ExceptionHandler(AccessDeniedException.class)
