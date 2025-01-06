@@ -29,7 +29,7 @@ public class RoleController {
 
     @OperationLog("添加角色")
     @PostMapping
-    @PreAuthorize("hasAuthority('system:role:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<RoleVO> addRole(@Valid @RequestBody RoleDTO role, Principal principal) {
         RoleVO createdRole = roleService.addRole(role, principal.getName());
         return ResultJson.ok(createdRole);
@@ -37,14 +37,14 @@ public class RoleController {
 
     @OperationLog("修改角色信息")
     @PutMapping
-    @PreAuthorize("hasAuthority('system:role:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<RoleVO> updateRole(@Valid @RequestBody RoleDTO role, Principal principal) {
         RoleVO createdRole = roleService.updateRole(role, principal.getName());
         return ResultJson.ok(createdRole);
     }
 
     @GetMapping("/pageable")
-    @PreAuthorize("hasAuthority('system:role:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<PageResult<List<RoleVO>>> getRolesPageable(
             @RequestParam(required = false) String q,
             @RequestParam(defaultValue = "1") int page,
@@ -64,14 +64,14 @@ public class RoleController {
 
     @OperationLog("删除角色")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('system:role:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<?> deleteRoleById(@PathVariable Long id) {
         roleService.deleteRoles(id);
         return ResultJson.ok();
     }
 
     @GetMapping("/permissions")
-    @PreAuthorize("hasAuthority('system:role:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<List<PermissionVO>> getPermissions() {
         List<PermissionVO> permissions = roleService.getPermissions();
         return ResultJson.ok(permissions);

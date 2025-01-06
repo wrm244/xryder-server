@@ -31,7 +31,7 @@ public class UserController {
 
     @OperationLog("添加用户")
     @PostMapping
-    @PreAuthorize("hasAuthority('system:user:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<UserVO> addUser(@Valid  @RequestBody UserDTO user, Principal principal) {
         UserVO createdUser = userService.addUser(user, principal.getName());
         return ResultJson.ok(createdUser);
@@ -39,7 +39,7 @@ public class UserController {
 
     @OperationLog("设置用户部门及职位")
     @PutMapping("/setting")
-    @PreAuthorize("hasAuthority('system:user:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<?> setUser(@RequestBody UserSettingDTO user) {
         userService.setUser(user);
         return ResultJson.ok();
@@ -47,7 +47,7 @@ public class UserController {
 
     @OperationLog("删除用户")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('system:user:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<Object> deleteUser(@PathVariable String id, Principal principal) {
         if (principal.getName().equals(id)) {
             throw new BadRequestException("无法删除当前登录账号！");
@@ -57,14 +57,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('system:user:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<UserVO> getUserById(@PathVariable String id) {
         UserVO user = userService.getUserById(id);
         return ResultJson.ok(user);
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('system:user:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<PageResult<List<UserVO>>> getUsers(
             @RequestParam(required = false) String q,
             @RequestParam(required = false) Integer type,
@@ -80,7 +80,7 @@ public class UserController {
 
     @OperationLog("分配用户角色")
     @PostMapping("/roles")
-    @PreAuthorize("hasAuthority('system:user:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<?> setUserRole(@RequestBody UserRoleDTO userRole, Principal principal) {
         userService.setUserRole(userRole, principal.getName());
         return ResultJson.ok();
@@ -88,7 +88,7 @@ public class UserController {
 
     @OperationLog("重置用户密码")
     @PutMapping("/{username}/pwd/reset")
-    @PreAuthorize("hasAuthority('system:user:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<?> resetPwd(@PathVariable String username) {
         if (Admin.username.equals(username)) {
             throw new BadRequestException("不能操作超管账号！");
@@ -99,7 +99,7 @@ public class UserController {
 
     @OperationLog("启用/禁用用户")
     @PutMapping("/{username}/status")
-    @PreAuthorize("hasAuthority('system:user:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<?> toggleEnabled(@PathVariable String username, Principal principal) {
         if (principal.getName().equals(username)) {
             throw new BadRequestException("不能禁用当前登录账号！");

@@ -27,7 +27,7 @@ public class PositionController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('system:position:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<PageResult<List<PositionVO>>> getPositionPageable(
             @RequestParam(required = false) String q,
             @RequestParam(required = false) Long deptId,
@@ -42,21 +42,21 @@ public class PositionController {
 
     @OperationLog("添加职位")
     @PostMapping
-    @PreAuthorize("hasAuthority('system:position:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<?> addPosition(@Valid @RequestBody PositionDTO position, Principal principal) {
         return ResultJson.ok(positionService.addPosition(position, principal.getName()));
     }
 
     @OperationLog("修改职位信息")
     @PutMapping
-    @PreAuthorize("hasAuthority('system:position:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<?> updatePosition(@Valid @RequestBody PositionDTO position) {
         return ResultJson.ok(positionService.updatePosition(position));
     }
 
     @OperationLog("删除职位")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('system:position:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<?> deletePosition(@PathVariable Long id) {
         positionService.deletePosition(id);
         return ResultJson.ok();

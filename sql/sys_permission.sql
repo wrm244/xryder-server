@@ -34,12 +34,12 @@ CREATE TABLE `sys_permission`  (
 -- ----------------------------
 -- Records of sys_permission
 -- ----------------------------
-INSERT INTO `sys_permission` VALUES (1, '部门管理', 'system:dept:all', NULL, NULL, NULL);
-INSERT INTO `sys_permission` VALUES (2, '用户管理', 'system:user:all', NULL, NULL, NULL);
-INSERT INTO `sys_permission` VALUES (3, '角色管理', 'system:role:all', NULL, NULL, NULL);
-INSERT INTO `sys_permission` VALUES (4, '通知公告', 'system:notify:all', NULL, NULL, NULL);
-INSERT INTO `sys_permission` VALUES (5, '操作日志', 'system:log:operation', NULL, NULL, NULL);
-INSERT INTO `sys_permission` VALUES (6, '登录日志', 'system:log:login', NULL, NULL, NULL);
-INSERT INTO `sys_permission` VALUES (7, '职位管理', 'system:position:all', NULL, NULL, NULL);
+INSERT INTO `sys_permission` VALUES (1, '部门管理', 'system', NULL, NULL, NULL);
+INSERT INTO `sys_permission` VALUES (2, '用户管理', 'system', NULL, NULL, NULL);
+INSERT INTO `sys_permission` VALUES (3, '角色管理', 'system', NULL, NULL, NULL);
+INSERT INTO `sys_permission` VALUES (4, '通知公告', 'system', NULL, NULL, NULL);
+INSERT INTO `sys_permission` VALUES (5, '操作日志', 'system', NULL, NULL, NULL);
+INSERT INTO `sys_permission` VALUES (6, '登录日志', 'system', NULL, NULL, NULL);
+INSERT INTO `sys_permission` VALUES (7, '职位管理', 'system', NULL, NULL, NULL);
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -36,14 +36,14 @@ public class DepartmentController {
 
     @OperationLog("创建部门")
     @PostMapping
-    @PreAuthorize("hasAuthority('system:dept:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<DepartmentVO> createDepartment(@RequestBody Department department, Principal principal) {
         return ResultJson.ok(departmentService.createDepartment(department, principal.getName()));
     }
 
     @OperationLog("部门排序")
     @PutMapping("/position")
-    @PreAuthorize("hasAuthority('system:dept:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<DepartmentVO> moveDepartment(
             @RequestParam Long id, @RequestParam Long parentId) {
         DepartmentVO updatedDepartment = departmentService.moveDepartment(id, parentId);
@@ -52,7 +52,7 @@ public class DepartmentController {
 
     @OperationLog("修改部门信息")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('system:dept:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<DepartmentVO> updateDepartment(
             @PathVariable Long id, @RequestBody DeptDTO deptDTO) {
         DepartmentVO updatedDepartment = departmentService.updateDepartment(id, deptDTO);
@@ -61,7 +61,7 @@ public class DepartmentController {
 
     @OperationLog("删除部门")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('system:dept:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<?> deleteDepartment(@PathVariable Long id) {
         departmentService.deleteDepartment(id);
         return ResultJson.ok();

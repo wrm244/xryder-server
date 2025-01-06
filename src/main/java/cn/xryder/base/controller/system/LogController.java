@@ -27,7 +27,7 @@ public class LogController {
     }
 
     @GetMapping("/login")
-    @PreAuthorize("hasAuthority('system:log:login')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<PageResult<List<LoginLogVO>>> getLoginLog(
             @RequestParam(required = false) String q,
             @RequestParam(defaultValue = "1") int page,
@@ -39,7 +39,7 @@ public class LogController {
     }
 
     @GetMapping("/operation")
-    @PreAuthorize("hasAuthority('system:log:operation')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<PageResult<List<OperationLogVO>>> getOperationLog(
             @RequestParam(required = false) String q,
             @RequestParam(defaultValue = "1") int page,

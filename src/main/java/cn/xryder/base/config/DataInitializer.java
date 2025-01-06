@@ -58,7 +58,6 @@ public class DataInitializer {
             if (departmentRepo.findById(1L).isEmpty()) {
                 // 初始化顶级部门
                 Department department = new Department();
-                department.setId(1L);
                 department.setCreator(Admin.username);
                 department.setPosition(1);
                 department.setCreateTime(LocalDateTime.now());

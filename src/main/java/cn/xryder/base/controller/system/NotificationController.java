@@ -28,14 +28,14 @@ public class NotificationController {
 
     @OperationLog("发送通知")
     @PostMapping
-    @PreAuthorize("hasAuthority('system:notify:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<?> addPosition(@Valid @RequestBody NotificationDTO notificationDTO, Principal principal) {
         notificationService.send(notificationDTO, principal.getName());
         return ResultJson.ok();
     }
 
     @GetMapping("")
-    @PreAuthorize("hasAuthority('system:notify:all')")
+    @PreAuthorize("hasAuthority('system')")
     public ResultJson<PageResult<List<NotificationVO>>> getNotifications(
             @RequestParam(required = false) String q,
             @RequestParam(defaultValue = "1") int page,
