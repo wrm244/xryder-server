@@ -3,14 +3,8 @@ package cn.xryder.base.config;
 import cn.xryder.base.common.Admin;
 import cn.xryder.base.common.RoleTypeEnum;
 import cn.xryder.base.common.SystemRoleEnum;
-import cn.xryder.base.domain.entity.system.Department;
-import cn.xryder.base.domain.entity.system.Role;
-import cn.xryder.base.domain.entity.system.User;
-import cn.xryder.base.domain.entity.system.UserRole;
-import cn.xryder.base.repo.system.DepartmentRepo;
-import cn.xryder.base.repo.system.RoleRepo;
-import cn.xryder.base.repo.system.UserRepo;
-import cn.xryder.base.repo.system.UserRoleRepo;
+import cn.xryder.base.domain.entity.system.*;
+import cn.xryder.base.repo.system.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +19,7 @@ import java.time.LocalDateTime;
 @Configuration
 public class DataInitializer {
     @Bean
-    public CommandLineRunner loadData(UserRepo userRepository, RoleRepo roleRepo, UserRoleRepo userRoleRepo, DepartmentRepo departmentRepo, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner loadData(UserRepo userRepository, RoleRepo roleRepo, UserRoleRepo userRoleRepo, RolePermissionRepo rolePermissionRepo, DepartmentRepo departmentRepo, PasswordEncoder passwordEncoder) {
         return args -> {
             if (userRepository.findById(Admin.username).isEmpty()) {
                 User admin = new User();
@@ -49,11 +43,22 @@ public class DataInitializer {
                 role2.setType(RoleTypeEnum.SYSTEM.getType());
                 roleRepo.save(role);
 
-                // 设置管理员角色
+                // 初始化默认用户的管理员角色
                 UserRole userRole = new UserRole();
                 userRole.setRoleId(SystemRoleEnum.ADMIN.getId());
                 userRole.setUsername(Admin.username);
                 userRoleRepo.save(userRole);
+
+                // 初始化角色权限信息
+                RolePermissionKey rolePermissionKey = new RolePermissionKey();
+                RolePermission rolePermission = new RolePermission();
+                rolePermissionKey.setRoleId(1L);
+                rolePermissionKey.setPermissionId(1L);
+                rolePermission.setId(rolePermissionKey);
+                rolePermission.setCreator(Admin.username);
+                rolePermission.setCreateTime(LocalDateTime.now());
+                rolePermission.setUpdateTime(LocalDateTime.now());
+                rolePermissionRepo.save(rolePermission);
             }
             if (departmentRepo.findById(1L).isEmpty()) {
                 // 初始化顶级部门
