@@ -19,7 +19,8 @@ import java.time.LocalDateTime;
 @Configuration
 public class DataInitializer {
     @Bean
-    public CommandLineRunner loadData(UserRepo userRepository, RoleRepo roleRepo, UserRoleRepo userRoleRepo, RolePermissionRepo rolePermissionRepo, DepartmentRepo departmentRepo, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner loadData(UserRepo userRepository, RoleRepo roleRepo, UserRoleRepo userRoleRepo,
+            RolePermissionRepo rolePermissionRepo, DepartmentRepo departmentRepo, PasswordEncoder passwordEncoder) {
         return args -> {
             if (userRepository.findById(Admin.username).isEmpty()) {
                 User admin = new User();
@@ -41,7 +42,7 @@ public class DataInitializer {
                 role2.setId(SystemRoleEnum.USER.getId());
                 role2.setName(SystemRoleEnum.USER.getName());
                 role2.setType(RoleTypeEnum.SYSTEM.getType());
-                roleRepo.save(role);
+                roleRepo.save(role2);
 
                 // 初始化默认用户的管理员角色
                 UserRole userRole = new UserRole();
