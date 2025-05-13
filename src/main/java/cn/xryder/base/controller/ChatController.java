@@ -100,7 +100,6 @@ public class ChatController {
             prompt = message;
         }
         return chatClient.prompt()
-                .functions("currentTasks", "sendMail", "getNewMails", "getDepartments")
                 .toolContext(Map.of("username", username))
                 .advisors(advisor -> advisor.param("chat_memory_conversation_id", conversationId)
                         .param("chat_memory_response_size", 100))
