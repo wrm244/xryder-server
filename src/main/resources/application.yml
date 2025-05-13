@@ -3,9 +3,9 @@ spring:
     name: server
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.150.203:3306/ryder?databaseTerm=SCHEMA&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useAffectedRows=true&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/ryder?databaseTerm=SCHEMA&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useAffectedRows=true&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
-    password: Yth145!$%
+    password: 123456
   ai:
     openai:
       api-key: ${ZHIPU_AI_API_KEY}
