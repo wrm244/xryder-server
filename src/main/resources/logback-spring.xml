@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <springProperty scope="context" name="logPath" source="log.file.path" defaultValue="./logs"/>
+    <springProperty scope="context" name="projectName" source="spring.application.name" defaultValue="app"/>
+    <!-- 属性定义 -->
+    <property name="LOG_HOME" value="${logPath}"/>
+    <property name="maxHistory" value="90"/>
+    <!--0. 日志格式和颜色渲染 -->
+    <!-- 彩色日志依赖的渲染类 -->
+    <conversionRule conversionWord="clr" class="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex"
+                    class="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+    <conversionRule conversionWord="wEx"
+                    class="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+    <!-- 彩色日志格式 -->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="${CONSOLE_LOG_PATTERN:-%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+
+    <property name="FILE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss} | ${LOG_LEVEL_PATTERN:-%5p} | %thread | %logger{100} %L | %msg%n"/>
+
+    <!-- ConsoleAppender 控制台输出日志 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- 对日志进行格式化 -->
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- INFO级别日志 -->
+    <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 过滤器，记录「INFO」及以上级别的日志 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/info/${projectName}-info-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>${maxHistory}</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ERROR级别日志 -->
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 过滤器，只记录「ERROR」级别的日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/error/${projectName}-error-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>${maxHistory}</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- eg: com.ljq.test 类的日志输出 info 及以上级别的日志 -->
+    <!--<logger name="com.ljq.test" level="info" />-->
+    <!-- eg: com.ljq.test1 类的日志不输出 -->
+    <!--<logger name="com.ljq.test1" additivity="false" />-->
+    <logger name="org.apache.ibatis.io" level="info"/>
+    <logger name="org.mybatis.spring" level="info"/>
+    <logger name="com.baomidou.mybatisplus.core.MybatisConfiguration" level="info"/>
+    <logger name="com.baomidou.mybatisplus.extension" level="info"/>
+    <logger name="org.hibernate.validator" level="info"/>
+    <logger name="org.apache.http" level="warn"/>
+    <logger name="com.zaxxer.hikari" level="info"/>
+    <logger name="com.alibaba.cloud" level="info"/>
+
+    <logger name="org.springframework" level="info"/>
+    <logger name="_org.springframework" level="info"/>
+
+    <logger name="springfox" level="info"/>
+    <logger name="io.springfox" level="info"/>
+    <logger name="io.swagger" level="info"/>
+
+    <logger name="io.lettuce" level="info"/>
+    <logger name="io.netty" level="info"/>
+
+    <!-- 根日志,所有日志appender都必须包含在root/logger中,否则不会起作用 -->
+    <root level="debug">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="INFO"/>
+        <appender-ref ref="ERROR"/>
+    </root>
+</configuration>

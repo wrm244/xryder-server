@@ -20,6 +20,7 @@ import cn.xryder.base.repo.system.RoleRepo;
 import cn.xryder.base.repo.system.UserRepo;
 import cn.xryder.base.repo.system.UserRoleRepo;
 import jakarta.persistence.criteria.Predicate;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
  */
 
 @Service
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private static final String DEFAULT_PWD = "Jx1016!";
     private final UserRepo userRepo;
@@ -48,16 +50,6 @@ public class UserServiceImpl implements UserService {
     private final PositionRepo positionRepo;
     private final PasswordEncoder passwordEncoder;
     private final SystemRoleService systemRoleService;
-
-    public UserServiceImpl(UserRepo userRepo, UserRoleRepo userRoleRepo, RoleRepo roleRepo, PositionRepo positionRepo,
-                           PasswordEncoder passwordEncoder, SystemRoleService systemRoleService) {
-        this.userRepo = userRepo;
-        this.userRoleRepo = userRoleRepo;
-        this.roleRepo = roleRepo;
-        this.positionRepo = positionRepo;
-        this.passwordEncoder = passwordEncoder;
-        this.systemRoleService = systemRoleService;
-    }
 
     public UserVO addUser(UserDTO user, String creator) {
         String username = user.getUsername();
@@ -147,7 +139,7 @@ public class UserServiceImpl implements UserService {
         if (!userExists) {
             throw new ResourceNotFoundException("用户不存在！");
         }
-        if (roleSet.size() == 0) {
+        if (roleSet.isEmpty()) {
             throw new BadRequestException("用户必须设置一个角色！");
         }
         // 不能修改管理员角色

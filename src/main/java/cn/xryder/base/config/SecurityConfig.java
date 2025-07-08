@@ -65,8 +65,10 @@ public class SecurityConfig {
     @Bean
     public UsernamePasswordAuthenticationFilter getCustomUsernamePasswordAuthFilter(AuthenticationManager authenticationManager) {
         UsernamePasswordAuthenticationFilter customUsernamePasswordAuthFilter = new UsernamePasswordAuthenticationFilter();
-        AntPathRequestMatcher antPathRequestMatcher = new AntPathRequestMatcher("/api/login", "POST");
-        customUsernamePasswordAuthFilter.setRequiresAuthenticationRequestMatcher(antPathRequestMatcher);
+        customUsernamePasswordAuthFilter.setRequiresAuthenticationRequestMatcher(
+                request -> "/api/login".equals(request.getRequestURI())
+                        && "POST".equals(request.getMethod())
+        );
         customUsernamePasswordAuthFilter.setAuthenticationSuccessHandler(myAuthenticationSuccessHandler);
         customUsernamePasswordAuthFilter.setAuthenticationFailureHandler(myAuthenticationFailureHandler);
         customUsernamePasswordAuthFilter.setAuthenticationManager(authenticationManager);

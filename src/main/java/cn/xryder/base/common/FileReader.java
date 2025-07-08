@@ -2,6 +2,8 @@ package cn.xryder.base.common;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.ss.usermodel.*;
@@ -101,7 +103,7 @@ public class FileReader {
     // 读取PDF文件
     public String readPdfFile(MultipartFile file) throws IOException {
         StringBuilder content = new StringBuilder();
-        try (PDDocument document = PDDocument.load(file.getInputStream())) {
+        try (PDDocument document = Loader.loadPDF((RandomAccessRead) file.getInputStream())) {
             PDFTextStripper pdfStripper = new PDFTextStripper();
             content.append(pdfStripper.getText(document));
         }

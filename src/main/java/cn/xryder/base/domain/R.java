@@ -1,6 +1,6 @@
 package cn.xryder.base.domain;
 
-import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +21,7 @@ import java.util.Objects;
 public class R<T> implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
+    private static final Gson gson = new Gson();
 
     // 预定义常用的成功响应，避免重复创建
     private static final R<Void> SUCCESS_EMPTY = new R<>(ResultCode.SUCCESS, null);
@@ -88,7 +89,7 @@ public class R<T> implements Serializable {
      */
     public String toJsonString() {
         if (cachedJsonString == null) {
-            cachedJsonString = JSON.toJSONString(this);
+            cachedJsonString = gson.toJson(this);
         }
         return cachedJsonString;
     }
@@ -116,15 +117,21 @@ public class R<T> implements Serializable {
         return !isSuccess();
     }
 
+    /**
+     * 判断是否是警告
+     *
+     */
+    public boolean isWarn() {
+        return ResultCode.BAD_REQUEST.getCode() == this.code;
+    }
+
     // 优化toString，使用StringBuilder
     @Override
     public String toString() {
-        return new StringBuilder(128)
-                .append("{\"code\":").append(code)
-                .append(", \"msg\":\"").append(msg).append('\"')
-                .append(", \"data\":\"").append(data).append('\"')
-                .append('}')
-                .toString();
+        return "{\"code\":" + code +
+                ", \"msg\":\"" + msg + '\"' +
+                ", \"data\":\"" + data + '\"' +
+                '}';
     }
 
     @Override

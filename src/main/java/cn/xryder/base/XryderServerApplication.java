@@ -26,22 +26,4 @@ public class XryderServerApplication {
     public static void main(String[] args) {
         SpringApplication.run(XryderServerApplication.class, args);
     }
-
-    // 使用虚拟线程处理请求
-    @Bean
-    public TomcatProtocolHandlerCustomizer<?> protocolHandlerVirtualThreadExecutorCustomizer() {
-        return protocolHandler -> {
-            protocolHandler.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
-        };
-    }
-
-    @Bean
-    public RouterFunction<ServerResponse> sseRoutes() {
-        return route(POST("/api/v1/ai/stream"), request ->
-                ServerResponse.ok()
-                        .contentType(MediaType.TEXT_EVENT_STREAM)
-                        .body(Flux.interval(Duration.ofSeconds(15)).map(seq -> "heartbeat " + seq), String.class)
-                        .timeout(Duration.ofSeconds(60))  // 超时时间设置为 60 秒
-        );
-    }
 }

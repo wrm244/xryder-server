@@ -1,6 +1,17 @@
+server:
+  tomcat:
+    uri-encoding: UTF-8 # tomcat的URI编码
+    accept-count: 1000 # 连接数满后的排队数，默认为100
+    threads:
+      max: 800 # tomcat最大线程数，默认为200
+      min-spare: 100 # Tomcat启动初始化的线程数，默认值10
+
 spring:
   application:
     name: server
+  threads:
+    virtual:
+      enabled: true # 启用虚拟线程
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://8.138.27.192:3306/ryder?databaseTerm=SCHEMA&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&useAffectedRows=true&useSSL=false&serverTimezone=Asia/Shanghai
@@ -16,3 +27,6 @@ spring:
         completions-path: /v4/chat/completions
         options:
           model: GLM-4-flash
+logging:
+  level:
+    root: info
