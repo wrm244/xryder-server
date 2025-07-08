@@ -1,12 +1,12 @@
-package cn.xryder.base.common;
+package cn.xryder.base.common.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 性别的枚举值
+ * 状态枚举值
  *
- * @author les
+ * @author wrm244
  */
 @Getter
 @AllArgsConstructor

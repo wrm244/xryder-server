@@ -1,7 +1,11 @@
-package cn.xryder.base.common;
+package cn.xryder.base.common.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+/**
+ * @author wrm244
+ */
 
 @Getter
 @AllArgsConstructor

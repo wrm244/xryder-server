@@ -1,7 +1,7 @@
 package cn.xryder.base.config.secrutiy;
 
+import cn.xryder.base.domain.R;
 import cn.xryder.base.domain.ResultCode;
-import cn.xryder.base.domain.ResultJson;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint,
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         PrintWriter printWriter = response.getWriter();
-        String body = ResultJson.failure(ResultCode.UNAUTHORIZED, "未登录").toString();
+        String body = R.failure(ResultCode.UNAUTHORIZED, "未登录").toString();
         printWriter.write(body);
         printWriter.flush();
     }

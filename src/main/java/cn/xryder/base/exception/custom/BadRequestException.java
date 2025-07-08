@@ -1,8 +1,7 @@
 package cn.xryder.base.exception.custom;
 
 /**
- * @author Joetao
- * @date 2023/11/29
+ * @author wrm244
  */
 public class BadRequestException extends BaseException {
     public BadRequestException(String message) {

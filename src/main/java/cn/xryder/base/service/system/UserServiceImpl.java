@@ -1,8 +1,7 @@
 package cn.xryder.base.service.system;
 
-import cn.xryder.base.common.Admin;
-import cn.xryder.base.common.CommonStatusEnum;
-import cn.xryder.base.common.SystemRoleEnum;
+import cn.xryder.base.common.enums.CommonStatusEnum;
+import cn.xryder.base.common.enums.SystemRoleEnum;
 import cn.xryder.base.domain.PageResult;
 import cn.xryder.base.domain.dto.system.UserDTO;
 import cn.xryder.base.domain.dto.system.UserRoleDTO;
@@ -42,16 +41,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
+    private static final String DEFAULT_PWD = "Jx1016!";
     private final UserRepo userRepo;
     private final UserRoleRepo userRoleRepo;
     private final RoleRepo roleRepo;
     private final PositionRepo positionRepo;
     private final PasswordEncoder passwordEncoder;
     private final SystemRoleService systemRoleService;
-    private static final String DEFAULT_PWD = "Jx1016!";
 
     public UserServiceImpl(UserRepo userRepo, UserRoleRepo userRoleRepo, RoleRepo roleRepo, PositionRepo positionRepo,
-            PasswordEncoder passwordEncoder, SystemRoleService systemRoleService) {
+                           PasswordEncoder passwordEncoder, SystemRoleService systemRoleService) {
         this.userRepo = userRepo;
         this.userRoleRepo = userRoleRepo;
         this.roleRepo = roleRepo;
@@ -152,7 +151,7 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("用户必须设置一个角色！");
         }
         // 不能修改管理员角色
-        if (username.equals(Admin.username)) {
+        if ("admin".equals(username)) {
             throw new BadRequestException("不能修改管理员角色！");
         }
         // 不能设置用户角色为管理员角色

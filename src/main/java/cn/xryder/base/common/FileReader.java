@@ -17,8 +17,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
- * @Author: joetao
- * @Date: 2024/10/15 10:07
+ * 文件读取工具类
+ *
+ * @author wrm244
  */
 @Component
 public class FileReader {
@@ -35,7 +36,8 @@ public class FileReader {
                 } else {
                     // 处理长整型数字，避免科学计数法
                     BigDecimal bigDecimalValue = BigDecimal.valueOf(cell.getNumericCellValue());
-                    return bigDecimalValue.toPlainString();  // 转换为不使用科学计数法的字符串
+                    // 转换为不使用科学计数法的字符串
+                    return bigDecimalValue.toPlainString();
                 }
             case BOOLEAN:
                 return String.valueOf(cell.getBooleanCellValue());

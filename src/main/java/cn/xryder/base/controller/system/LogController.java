@@ -1,7 +1,7 @@
 package cn.xryder.base.controller.system;
 
 import cn.xryder.base.domain.PageResult;
-import cn.xryder.base.domain.ResultJson;
+import cn.xryder.base.domain.R;
 import cn.xryder.base.domain.vo.LoginLogVO;
 import cn.xryder.base.domain.vo.OperationLogVO;
 import cn.xryder.base.service.system.LogService;
@@ -28,25 +28,25 @@ public class LogController {
 
     @GetMapping("/login")
     @PreAuthorize("hasAuthority('system')")
-    public ResultJson<PageResult<List<LoginLogVO>>> getLoginLog(
+    public R<PageResult<List<LoginLogVO>>> getLoginLog(
             @RequestParam(required = false) String q,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize) {
         if (page <= 1) {
             page = 1;
         }
-        return ResultJson.ok(logService.queryLoginLog(q, page, pageSize));
+        return R.ok(logService.queryLoginLog(q, page, pageSize));
     }
 
     @GetMapping("/operation")
     @PreAuthorize("hasAuthority('system')")
-    public ResultJson<PageResult<List<OperationLogVO>>> getOperationLog(
+    public R<PageResult<List<OperationLogVO>>> getOperationLog(
             @RequestParam(required = false) String q,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize) {
         if (page <= 1) {
             page = 1;
         }
-        return ResultJson.ok(logService.queryOperationLog(q, page, pageSize));
+        return R.ok(logService.queryOperationLog(q, page, pageSize));
     }
 }

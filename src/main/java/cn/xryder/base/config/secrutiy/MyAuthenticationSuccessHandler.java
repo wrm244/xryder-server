@@ -1,7 +1,7 @@
 package cn.xryder.base.config.secrutiy;
 
 import cn.xryder.base.domain.LoginUser;
-import cn.xryder.base.domain.ResultJson;
+import cn.xryder.base.domain.R;
 import cn.xryder.base.domain.entity.system.LoginLog;
 import cn.xryder.base.domain.entity.system.User;
 import cn.xryder.base.domain.vo.AccessTokenVO;
@@ -68,7 +68,7 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         PrintWriter printWriter = response.getWriter();
-        String body = ResultJson.ok(accessTokenVO).toJsonString();
+        String body = R.ok(accessTokenVO).toJsonString();
         printWriter.write(body);
         printWriter.flush();
     }

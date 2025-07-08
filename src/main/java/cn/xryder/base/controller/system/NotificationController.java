@@ -2,7 +2,7 @@ package cn.xryder.base.controller.system;
 
 import cn.xryder.base.config.OperationLog;
 import cn.xryder.base.domain.PageResult;
-import cn.xryder.base.domain.ResultJson;
+import cn.xryder.base.domain.R;
 import cn.xryder.base.domain.dto.system.NotificationDTO;
 import cn.xryder.base.domain.vo.NotificationVO;
 import cn.xryder.base.service.system.NotificationService;
@@ -29,14 +29,14 @@ public class NotificationController {
     @OperationLog("发送通知")
     @PostMapping
     @PreAuthorize("hasAuthority('system')")
-    public ResultJson<?> addPosition(@Valid @RequestBody NotificationDTO notificationDTO, Principal principal) {
+    public R<?> addPosition(@Valid @RequestBody NotificationDTO notificationDTO, Principal principal) {
         notificationService.send(notificationDTO, principal.getName());
-        return ResultJson.ok();
+        return R.ok();
     }
 
     @GetMapping("")
     @PreAuthorize("hasAuthority('system')")
-    public ResultJson<PageResult<List<NotificationVO>>> getNotifications(
+    public R<PageResult<List<NotificationVO>>> getNotifications(
             @RequestParam(required = false) String q,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize,
@@ -45,6 +45,6 @@ public class NotificationController {
         if (page <= 1) {
             page = 1;
         }
-        return ResultJson.ok(notificationService.getNotifications(q, page, pageSize, principal.getName()));
+        return R.ok(notificationService.getNotifications(q, page, pageSize, principal.getName()));
     }
 }

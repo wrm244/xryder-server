@@ -1,6 +1,6 @@
 package cn.xryder.base.domain.entity.system;
 
-import cn.xryder.base.common.RoleTypeEnum;
+import cn.xryder.base.common.enums.RoleTypeEnum;
 import cn.xryder.base.domain.entity.BaseDO;
 import jakarta.persistence.*;
 import lombok.Data;

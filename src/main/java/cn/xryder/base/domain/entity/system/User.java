@@ -1,7 +1,7 @@
 package cn.xryder.base.domain.entity.system;
 
-import cn.xryder.base.common.CommonStatusEnum;
-import cn.xryder.base.common.SexEnum;
+import cn.xryder.base.common.enums.CommonStatusEnum;
+import cn.xryder.base.common.enums.SexEnum;
 import cn.xryder.base.domain.entity.BaseDO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

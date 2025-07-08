@@ -1,8 +1,7 @@
 package cn.xryder.base.controller;
 
-import cn.xryder.base.common.Admin;
 import cn.xryder.base.config.OperationLog;
-import cn.xryder.base.domain.ResultJson;
+import cn.xryder.base.domain.R;
 import cn.xryder.base.domain.dto.AccountDTO;
 import cn.xryder.base.domain.dto.system.PasswordChangeDTO;
 import cn.xryder.base.domain.entity.system.Avatar;
@@ -29,37 +28,37 @@ public class AccountController {
     }
 
     @GetMapping("")
-    public ResultJson<UserVO> getAccount(Principal principal) {
+    public R<UserVO> getAccount(Principal principal) {
         String name = principal.getName();
         UserVO accountInfo = accountService.getAccountInfo(name);
-        return ResultJson.ok(accountInfo);
+        return R.ok(accountInfo);
     }
 
     @OperationLog("修改账户信息")
     @PutMapping("")
-    public ResultJson<UserVO> updateAccount(Principal principal, @RequestBody AccountDTO account) {
+    public R<UserVO> updateAccount(Principal principal, @RequestBody AccountDTO account) {
         String username = principal.getName();
         UserVO accountInfo = accountService.updateAccount(username, account);
-        return ResultJson.ok(accountInfo);
+        return R.ok(accountInfo);
     }
 
     @OperationLog("修改账户密码")
     @PutMapping("/password")
-    public ResultJson changePassword(Principal principal, @RequestBody PasswordChangeDTO passwordChange) throws Exception {
+    public R changePassword(Principal principal, @RequestBody PasswordChangeDTO passwordChange) throws Exception {
         String username = principal.getName();
-        if (Admin.username.equals(username)) {
+        if ("admin".equals(username)) {
             throw new BadRequestException("不能修改超管账号！");
         }
         String oldPassword = passwordChange.getOldPassword();
         String newPassword = passwordChange.getNewPassword();
         accountService.changePassword(username, oldPassword, newPassword);
-        return ResultJson.ok();
+        return R.ok();
     }
 
     @OperationLog("更新头像")
     @PostMapping("/avatar")
-    public ResultJson<Avatar> uploadAvatarImage(@RequestParam("file") MultipartFile file, Principal principal) throws IOException {
-        return ResultJson.ok(accountService.saveAvatar(file, principal.getName()));
+    public R<Avatar> uploadAvatarImage(@RequestParam("file") MultipartFile file, Principal principal) throws IOException {
+        return R.ok(accountService.saveAvatar(file, principal.getName()));
     }
 }
 

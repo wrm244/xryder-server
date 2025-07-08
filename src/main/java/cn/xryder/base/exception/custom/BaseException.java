@@ -1,5 +1,8 @@
 package cn.xryder.base.exception.custom;
 
+/**
+ * @author wrm244
+ */
 public class BaseException extends RuntimeException {
     public BaseException() {
         super();

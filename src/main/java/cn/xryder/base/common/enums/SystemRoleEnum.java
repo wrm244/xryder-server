@@ -1,4 +1,4 @@
-package cn.xryder.base.common;
+package cn.xryder.base.common.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

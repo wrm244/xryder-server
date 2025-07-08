@@ -1,7 +1,7 @@
 package cn.xryder.base.config.secrutiy;
 
+import cn.xryder.base.domain.R;
 import cn.xryder.base.domain.ResultCode;
-import cn.xryder.base.domain.ResultJson;
 import cn.xryder.base.service.JwtService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -68,7 +68,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         PrintWriter printWriter = response.getWriter();
-        String body = ResultJson.failure(ResultCode.TOKEN_EXPIRED).toString();
+        String body = R.failure(ResultCode.TOKEN_EXPIRED).toString();
         printWriter.write(body);
         printWriter.flush();
     }

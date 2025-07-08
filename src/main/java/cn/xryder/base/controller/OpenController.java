@@ -1,8 +1,8 @@
 package cn.xryder.base.controller;
 
 import cn.xryder.base.common.RsaUtil;
+import cn.xryder.base.domain.R;
 import cn.xryder.base.domain.ResultCode;
-import cn.xryder.base.domain.ResultJson;
 import cn.xryder.base.service.JwtService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,19 +28,19 @@ public class OpenController {
     }
 
     @GetMapping("/publicKey")
-    public ResultJson<String> getPublicKey() {
-        return ResultJson.ok(RsaUtil.getPublicKey());
+    public R<String> getPublicKey() {
+        return R.ok(RsaUtil.getPublicKey());
     }
 
     @GetMapping("/token")
-    public ResultJson<String> getToken(@RequestParam("refreshToken") String refreshToken) {
+    public R<String> getToken(@RequestParam("refreshToken") String refreshToken) {
         Boolean isRefreshToken = jwtService.isValidRefreshToken(refreshToken);
         if (!isRefreshToken) {
-            return ResultJson.failure(ResultCode.INVALID_REFRESH_TOKEN, "无效的refreshToken");
+            return R.failure(ResultCode.INVALID_REFRESH_TOKEN, "无效的refreshToken");
         }
         String username = jwtService.extractUsername(refreshToken);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        return ResultJson.ok(jwtService.GenerateToken(username,
+        return R.ok(jwtService.GenerateToken(username,
                 StringUtils.join(userDetails.getAuthorities(), ",")));
     }
 }

@@ -28,7 +28,7 @@ package cn.xryder.base.controller.monitor;
 import cn.xryder.base.ai.agent.MonitorAgent;
 import cn.xryder.base.ai.agent.QuestionClassifierAgent;
 import cn.xryder.base.config.OperationLog;
-import cn.xryder.base.domain.ResultJson;
+import cn.xryder.base.domain.R;
 import cn.xryder.base.domain.vo.AiChatMonitorVO;
 import cn.xryder.base.exception.custom.BadRequestException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -57,13 +57,13 @@ public class MonitorController {
 
     @OperationLog("智能监控问答")
     @GetMapping("/chat")
-    public ResultJson<AiChatMonitorVO> chat(@RequestParam(value = "question") String question) throws JsonProcessingException {
+    public R<AiChatMonitorVO> chat(@RequestParam(value = "question") String question) throws JsonProcessingException {
         Integer questionType = questionClassifierAgent.getQuestionType(question);
         if (questionType == 1) {
-            return ResultJson.ok(handleDataAnalyse(question));
+            return R.ok(handleDataAnalyse(question));
         }
 
-        return ResultJson.ok(monitorAgent.notSupport());
+        return R.ok(monitorAgent.notSupport());
     }
 
     private AiChatMonitorVO handleDataAnalyse(String message) throws JsonProcessingException {

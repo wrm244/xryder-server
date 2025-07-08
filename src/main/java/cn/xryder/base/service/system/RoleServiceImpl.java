@@ -1,6 +1,6 @@
 package cn.xryder.base.service.system;
 
-import cn.xryder.base.common.RoleTypeEnum;
+import cn.xryder.base.common.enums.RoleTypeEnum;
 import cn.xryder.base.domain.PageResult;
 import cn.xryder.base.domain.dto.system.RoleDTO;
 import cn.xryder.base.domain.entity.system.Role;

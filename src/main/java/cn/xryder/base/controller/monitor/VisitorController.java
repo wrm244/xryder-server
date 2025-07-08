@@ -23,7 +23,7 @@ package cn.xryder.base.controller.monitor;
  * SOFTWARE.
  */
 
-import cn.xryder.base.domain.ResultJson;
+import cn.xryder.base.domain.R;
 import cn.xryder.base.service.monitor.VisitorService;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,8 +49,8 @@ public class VisitorController {
     }
 
     @GetMapping("/uv")
-    public ResultJson<Long> getDailyUV() {
-        return ResultJson.ok(visitorService.countUniqueVisitors(LocalDate.now()));
+    public R<Long> getDailyUV() {
+        return R.ok(visitorService.countUniqueVisitors(LocalDate.now()));
     }
 }
 

@@ -17,7 +17,7 @@ import java.util.HashMap;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResultJson<T> implements Serializable {
+public class R<T> implements Serializable {
     @Serial
     private static final long serialVersionUID = 783015033603078674L;
     private int code;
@@ -25,52 +25,52 @@ public class ResultJson<T> implements Serializable {
     private String requestId;
     private T data;
 
-    public ResultJson(ResultCode resultCode) {
+    public R(ResultCode resultCode) {
         setResultCode(resultCode);
     }
 
-    public ResultJson(int code, String msg) {
+    public R(int code, String msg) {
         this.code = code;
         this.msg = msg;
     }
 
-    public ResultJson(ResultCode resultCode, T data) {
+    public R(ResultCode resultCode, T data) {
         setResultCode(resultCode);
         this.data = data;
     }
 
-    public ResultJson(ResultCode resultCode, T data, String requestId) {
+    public R(ResultCode resultCode, T data, String requestId) {
         setResultCode(resultCode);
         this.data = data;
         this.requestId = requestId;
     }
 
-    public static ResultJson<Object> ok() {
+    public static R<Object> ok() {
         return ok(new HashMap<>(1));
     }
 
-    public static <T> ResultJson<T> ok(T data) {
-        return new ResultJson<>(ResultCode.SUCCESS, data);
+    public static <T> R<T> ok(T data) {
+        return new R<>(ResultCode.SUCCESS, data);
     }
 
-    public static <T> ResultJson<T> ok(T data, String requestId) {
-        return new ResultJson<>(ResultCode.SUCCESS, data, requestId);
+    public static <T> R<T> ok(T data, String requestId) {
+        return new R<>(ResultCode.SUCCESS, data, requestId);
     }
 
-    public static <T> ResultJson<T> failure(ResultCode code) {
+    public static <T> R<T> failure(ResultCode code) {
         return failure(code, null);
     }
 
-    public static <T> ResultJson<T> failure(ResultCode code, T o) {
-        return new ResultJson<>(code, o);
+    public static <T> R<T> failure(ResultCode code, T o) {
+        return new R<>(code, o);
     }
 
-    public static <T> ResultJson<T> failure(ResultCode code, T o, String requestId) {
-        return new ResultJson<>(code, o, requestId);
+    public static <T> R<T> failure(ResultCode code, T o, String requestId) {
+        return new R<>(code, o, requestId);
     }
 
-    public static <T> ResultJson<T> failure(int code, String msg) {
-        return new ResultJson<>(code, msg);
+    public static <T> R<T> failure(int code, String msg) {
+        return new R<>(code, msg);
     }
 
     //对象转成JSON

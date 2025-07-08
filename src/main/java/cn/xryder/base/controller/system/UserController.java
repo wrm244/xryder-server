@@ -1,9 +1,8 @@
 package cn.xryder.base.controller.system;
 
-import cn.xryder.base.common.Admin;
 import cn.xryder.base.config.OperationLog;
 import cn.xryder.base.domain.PageResult;
-import cn.xryder.base.domain.ResultJson;
+import cn.xryder.base.domain.R;
 import cn.xryder.base.domain.dto.system.UserDTO;
 import cn.xryder.base.domain.dto.system.UserRoleDTO;
 import cn.xryder.base.domain.dto.system.UserSettingDTO;
@@ -32,40 +31,40 @@ public class UserController {
     @OperationLog("添加用户")
     @PostMapping
     @PreAuthorize("hasAuthority('system')")
-    public ResultJson<UserVO> addUser(@Valid @RequestBody UserDTO user, Principal principal) {
+    public R<UserVO> addUser(@Valid @RequestBody UserDTO user, Principal principal) {
         UserVO createdUser = userService.addUser(user, principal.getName());
-        return ResultJson.ok(createdUser);
+        return R.ok(createdUser);
     }
 
     @OperationLog("设置用户部门及职位")
     @PutMapping("/setting")
     @PreAuthorize("hasAuthority('system')")
-    public ResultJson<?> setUser(@RequestBody UserSettingDTO user) {
+    public R<?> setUser(@RequestBody UserSettingDTO user) {
         userService.setUser(user);
-        return ResultJson.ok();
+        return R.ok();
     }
 
     @OperationLog("删除用户")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('system')")
-    public ResultJson<Object> deleteUser(@PathVariable String id, Principal principal) {
+    public R<Object> deleteUser(@PathVariable String id, Principal principal) {
         if (principal.getName().equals(id)) {
             throw new BadRequestException("无法删除当前登录账号！");
         }
         userService.deleteUser(id);
-        return ResultJson.ok();
+        return R.ok();
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('system')")
-    public ResultJson<UserVO> getUserById(@PathVariable String id) {
+    public R<UserVO> getUserById(@PathVariable String id) {
         UserVO user = userService.getUserById(id);
-        return ResultJson.ok(user);
+        return R.ok(user);
     }
 
     @GetMapping
     @PreAuthorize("hasAuthority('system')")
-    public ResultJson<PageResult<List<UserVO>>> getUsers(
+    public R<PageResult<List<UserVO>>> getUsers(
             @RequestParam(required = false) String q,
             @RequestParam(required = false) Integer type,
             @RequestParam(required = false) Long deptId,
@@ -75,37 +74,37 @@ public class UserController {
             page = 1;
         }
         PageResult<List<UserVO>> users = userService.getUsers(q, type, deptId, page, pageSize);
-        return ResultJson.ok(users);
+        return R.ok(users);
     }
 
     @OperationLog("分配用户角色")
     @PostMapping("/roles")
     @PreAuthorize("hasAuthority('system')")
-    public ResultJson<?> setUserRole(@RequestBody UserRoleDTO userRole, Principal principal) {
+    public R<?> setUserRole(@RequestBody UserRoleDTO userRole, Principal principal) {
         userService.setUserRole(userRole, principal.getName());
-        return ResultJson.ok();
+        return R.ok();
     }
 
     @OperationLog("重置用户密码")
     @PutMapping("/{username}/pwd/reset")
     @PreAuthorize("hasAuthority('system')")
-    public ResultJson<?> resetPwd(@PathVariable String username) {
-        if (Admin.username.equals(username)) {
+    public R<?> resetPwd(@PathVariable String username) {
+        if ("admin".equals(username)) {
             throw new BadRequestException("不能操作超管账号！");
         }
         userService.resetPwd(username);
-        return ResultJson.ok();
+        return R.ok();
     }
 
     @OperationLog("启用/禁用用户")
     @PutMapping("/{username}/status")
     @PreAuthorize("hasAuthority('system')")
-    public ResultJson<?> toggleEnabled(@PathVariable String username, Principal principal) {
+    public R<?> toggleEnabled(@PathVariable String username, Principal principal) {
         if (principal.getName().equals(username)) {
             throw new BadRequestException("不能禁用当前登录账号！");
         }
         userService.toggleEnabled(username);
-        return ResultJson.ok();
+        return R.ok();
     }
 
 }

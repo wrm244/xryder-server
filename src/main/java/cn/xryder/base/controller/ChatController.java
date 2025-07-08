@@ -2,7 +2,7 @@ package cn.xryder.base.controller;
 
 import cn.xryder.base.common.FileReader;
 import cn.xryder.base.config.OperationLog;
-import cn.xryder.base.domain.ResultJson;
+import cn.xryder.base.domain.R;
 import cn.xryder.base.exception.custom.BadRequestException;
 import cn.xryder.base.exception.custom.ServerException;
 import cn.xryder.base.service.JwtService;
@@ -64,9 +64,9 @@ public class ChatController {
     }
 
     @GetMapping("/token")
-    public ResultJson<String> generate(Principal principal) {
+    public R<String> generate(Principal principal) {
         String aiChatToken = jwtService.GenerateAiChatToken(principal.getName());
-        return ResultJson.ok(aiChatToken);
+        return R.ok(aiChatToken);
     }
 
     @GetMapping("/generate")
