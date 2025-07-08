@@ -36,6 +36,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final UserNotificationRepo userNotificationRepo;
     private final UserRepo userRepo;
     private final DepartmentRepo departmentRepo;
+
     public NotificationServiceImpl(NotificationRepo notificationRepo, UserNotificationRepo userNotificationRepo, UserRepo userRepo, DepartmentRepo departmentRepo) {
         this.notificationRepo = notificationRepo;
         this.userNotificationRepo = userNotificationRepo;
@@ -65,7 +66,7 @@ public class NotificationServiceImpl implements NotificationService {
         } else {
             usernames = userRepo.findAll().stream().map(User::getUsername).collect(Collectors.toSet());
         }
-        for (String name: usernames) {
+        for (String name : usernames) {
             UserNotification userNotification = new UserNotification();
             userNotification.setNotification(notification);
             userNotification.setUsername(name);
@@ -96,7 +97,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private Set<Long> getChildrenDeptIds(List<Long> deptIds) {
         Set<Long> allIds = new HashSet<>();
-        for (Long deptId: deptIds) {
+        for (Long deptId : deptIds) {
             Set<Long> ids = getAllChildrenDepartmentIds(deptId);
             allIds.addAll(ids);
         }

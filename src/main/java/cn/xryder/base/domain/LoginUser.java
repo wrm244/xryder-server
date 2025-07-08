@@ -27,7 +27,7 @@ public class LoginUser implements UserDetails {
     private Set<GrantedAuthority> authorities;
 
     @Override
-    public Set<GrantedAuthority>  getAuthorities() {
+    public Set<GrantedAuthority> getAuthorities() {
         return this.authorities;
     }
 

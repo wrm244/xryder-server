@@ -11,13 +11,21 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum CommonStatusEnum {
-    /** 成功 */
+    /**
+     * 成功
+     */
     SUCCESS(1),
-    /** 失败 */
+    /**
+     * 失败
+     */
     FAIL(0),
-    /** 开启 */
+    /**
+     * 开启
+     */
     ENABLE(1),
-    /** 关闭 */
+    /**
+     * 关闭
+     */
     DISABLE(0);
 
     private final Integer status;

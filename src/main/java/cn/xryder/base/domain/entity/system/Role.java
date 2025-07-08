@@ -29,7 +29,7 @@ public class Role extends BaseDO {
     private Integer level;
     /**
      * 角色类型
-     *
+     * <p>
      * 枚举 {@link RoleTypeEnum}
      */
     private Integer type;

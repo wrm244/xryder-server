@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -20,26 +21,24 @@ import java.util.Map;
  * @date 2022/11/16
  */
 public class RsaUtil {
-    private static final int KEY_SIZE = 1024;
-
     public static final String PRIVATE_KEY = "pri";
     public static final String PUBLIC_KEY = "pub";
-
+    private static final int KEY_SIZE = 1024;
     private static KeyPair keyPair;
 
-    private static Map<String,String> rsaMap;
+    private static Map<String, String> rsaMap;
 
     //生成RSA，并存放
     static {
         try {
-            Provider provider =new BouncyCastleProvider();
+            Provider provider = new BouncyCastleProvider();
             Security.addProvider(provider);
             SecureRandom random = new SecureRandom();
             KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA", provider);
-            generator.initialize(KEY_SIZE,random);
+            generator.initialize(KEY_SIZE, random);
             keyPair = generator.generateKeyPair();
             storeRSA();
-        } catch(NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
     }
@@ -66,7 +65,7 @@ public class RsaUtil {
      * @throws Exception e
      */
     public static String decryptWithPrivate(String encryptText) throws Exception {
-        if(StringUtils.isBlank(encryptText)){
+        if (StringUtils.isBlank(encryptText)) {
             return null;
         }
         byte[] en_byte = Base64.decodeBase64(encryptText.getBytes());
@@ -81,13 +80,14 @@ public class RsaUtil {
 
     /**
      * java端 使用公钥加密(此方法暂时用不到)
+     *
      * @param plaintext 明文内容
      * @return byte[]
      * @throws UnsupportedEncodingException e
      */
-    public  static byte[] encrypt(String plaintext) throws UnsupportedEncodingException {
-        String encode = URLEncoder.encode(plaintext, "utf-8");
-        RSAPublicKey rsaPublicKey = (RSAPublicKey)keyPair.getPublic();
+    public static byte[] encrypt(String plaintext) throws UnsupportedEncodingException {
+        String encode = URLEncoder.encode(plaintext, StandardCharsets.UTF_8);
+        RSAPublicKey rsaPublicKey = (RSAPublicKey) keyPair.getPublic();
         //获取公钥指数
         BigInteger e = rsaPublicKey.getPublicExponent();
         //获取公钥系数
@@ -102,6 +102,7 @@ public class RsaUtil {
 
     /**
      * java端 使用私钥解密(此方法暂时用不到)
+     *
      * @param cipherText 加密后的字节数组
      * @return 解密后的数据
      * @throws UnsupportedEncodingException e
@@ -120,23 +121,25 @@ public class RsaUtil {
         //转成String,此时是乱码
         String en = new String(mt);
         //再进行编码,最后返回解密后得到的明文
-        return URLDecoder.decode(en, "UTF-8");
+        return URLDecoder.decode(en, StandardCharsets.UTF_8);
     }
 
     /**
      * 获取公钥
+     *
      * @return 公钥
      */
-    public static String getPublicKey(){
+    public static String getPublicKey() {
         return rsaMap.get(PUBLIC_KEY);
     }
 
     /**
      * 获取私钥
+     *
      * @return 私钥
      */
-    public static String getPrivateKey(){
-        return  rsaMap.get(PRIVATE_KEY);
+    public static String getPrivateKey() {
+        return rsaMap.get(PRIVATE_KEY);
     }
 
     public static void main(String[] args) throws UnsupportedEncodingException {

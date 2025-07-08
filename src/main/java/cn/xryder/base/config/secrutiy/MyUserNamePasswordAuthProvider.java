@@ -20,6 +20,7 @@ public class MyUserNamePasswordAuthProvider implements AuthenticationProvider {
     private final UserDetailsService userDetailsService;
     private PasswordEncoder passwordEncoder;
     private boolean passwordEncrypted = false;
+
     public MyUserNamePasswordAuthProvider(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }

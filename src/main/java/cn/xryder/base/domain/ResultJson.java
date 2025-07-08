@@ -25,9 +25,30 @@ public class ResultJson<T> implements Serializable {
     private String requestId;
     private T data;
 
+    public ResultJson(ResultCode resultCode) {
+        setResultCode(resultCode);
+    }
+
+    public ResultJson(int code, String msg) {
+        this.code = code;
+        this.msg = msg;
+    }
+
+    public ResultJson(ResultCode resultCode, T data) {
+        setResultCode(resultCode);
+        this.data = data;
+    }
+
+    public ResultJson(ResultCode resultCode, T data, String requestId) {
+        setResultCode(resultCode);
+        this.data = data;
+        this.requestId = requestId;
+    }
+
     public static ResultJson<Object> ok() {
         return ok(new HashMap<>(1));
     }
+
     public static <T> ResultJson<T> ok(T data) {
         return new ResultJson<>(ResultCode.SUCCESS, data);
     }
@@ -52,29 +73,9 @@ public class ResultJson<T> implements Serializable {
         return new ResultJson<>(code, msg);
     }
 
-    public ResultJson(ResultCode resultCode) {
-        setResultCode(resultCode);
-    }
-
     //对象转成JSON
     public String toJsonString() {
         return JSON.toJSONString(this);
-    }
-
-    public ResultJson(int code, String msg) {
-        this.code = code;
-        this.msg = msg;
-    }
-
-    public ResultJson(ResultCode resultCode, T data) {
-        setResultCode(resultCode);
-        this.data = data;
-    }
-
-    public ResultJson(ResultCode resultCode, T data, String requestId) {
-        setResultCode(resultCode);
-        this.data = data;
-        this.requestId = requestId;
     }
 
     public void setResultCode(ResultCode resultCode) {
@@ -87,7 +88,7 @@ public class ResultJson<T> implements Serializable {
         return "{" +
                 "\"code\":" + code +
                 ", \"msg\":\"" + msg + '\"' +
-                ", \"data\":\"" + data + '\"'+
+                ", \"data\":\"" + data + '\"' +
                 '}';
     }
 }

@@ -14,6 +14,7 @@ import java.util.List;
 public interface RolePermissionRepo extends JpaRepository<RolePermission, RolePermissionKey>, JpaSpecificationExecutor<RolePermission> {
     /**
      * 根据角色id列表查询权限id列表
+     *
      * @param roleIds 角色id列表
      * @return 权限id列表
      */
@@ -21,6 +22,7 @@ public interface RolePermissionRepo extends JpaRepository<RolePermission, RolePe
 
     /**
      * 根据角色id查询权限id列表
+     *
      * @param roleId 角色id
      * @return 权限id列表
      */
@@ -28,6 +30,7 @@ public interface RolePermissionRepo extends JpaRepository<RolePermission, RolePe
 
     /**
      * 删除角色权限信息
+     *
      * @param roleId 角色id
      */
     void deleteAllByIdRoleId(Long roleId);

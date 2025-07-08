@@ -47,14 +47,17 @@ public class UserServiceImpl implements UserService {
     private final RoleRepo roleRepo;
     private final PositionRepo positionRepo;
     private final PasswordEncoder passwordEncoder;
+    private final SystemRoleService systemRoleService;
     private static final String DEFAULT_PWD = "Jx1016!";
 
-    public UserServiceImpl(UserRepo userRepo, UserRoleRepo userRoleRepo, RoleRepo roleRepo, PositionRepo positionRepo, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepo userRepo, UserRoleRepo userRoleRepo, RoleRepo roleRepo, PositionRepo positionRepo,
+            PasswordEncoder passwordEncoder, SystemRoleService systemRoleService) {
         this.userRepo = userRepo;
         this.userRoleRepo = userRoleRepo;
         this.roleRepo = roleRepo;
         this.positionRepo = positionRepo;
         this.passwordEncoder = passwordEncoder;
+        this.systemRoleService = systemRoleService;
     }
 
     public UserVO addUser(UserDTO user, String creator) {
@@ -75,13 +78,13 @@ public class UserServiceImpl implements UserService {
         userRepo.save(userDO);
 
         UserRole userRole = new UserRole();
-        userRole.setRoleId(SystemRoleEnum.USER.getId());
+        userRole.setRoleId(systemRoleService.getUserRoleId());
         userRole.setUsername(username);
         userRoleRepo.save(userRole);
 
         RoleVO roleVO = new RoleVO();
         roleVO.setName(SystemRoleEnum.USER.getName());
-        roleVO.setId(SystemRoleEnum.USER.getId());
+        roleVO.setId(systemRoleService.getUserRoleId());
         return UserVO.builder()
                 .username(username)
                 .nickname(user.getNickname())
@@ -103,7 +106,8 @@ public class UserServiceImpl implements UserService {
         UserVO userVO = new UserVO();
         BeanUtils.copyProperties(user, userVO);
         List<UserRole> userRoles = userRoleRepo.findAllByUsername(username);
-        List<Role> roles = roleRepo.findAllById(userRoles.stream().map(UserRole::getRoleId).collect(Collectors.toList()));
+        List<Role> roles = roleRepo
+                .findAllById(userRoles.stream().map(UserRole::getRoleId).collect(Collectors.toList()));
         Set<RoleVO> roleVOS = roles.stream().map(r -> {
             RoleVO roleVO = new RoleVO();
             roleVO.setId(r.getId());
@@ -130,7 +134,8 @@ public class UserServiceImpl implements UserService {
             BeanUtils.copyProperties(u, userVO);
             users.add(userVO);
         });
-        return PageResult.<List<UserVO>>builder().page(page).data(users).rows(users.size()).total(all.getTotalElements()).build();
+        return PageResult.<List<UserVO>>builder().page(page).data(users).rows(users.size())
+                .total(all.getTotalElements()).build();
     }
 
     @Override
@@ -146,12 +151,12 @@ public class UserServiceImpl implements UserService {
         if (roleSet.size() == 0) {
             throw new BadRequestException("用户必须设置一个角色！");
         }
-        //不能修改管理员角色
+        // 不能修改管理员角色
         if (username.equals(Admin.username)) {
             throw new BadRequestException("不能修改管理员角色！");
         }
-        //不能设置用户角色为管理员角色
-        roleSet.remove(SystemRoleEnum.ADMIN.getId());
+        // 不能设置用户角色为管理员角色
+        roleSet.remove(systemRoleService.getAdminRoleId());
         userRoleRepo.deleteAllByUsername(username);
         List<UserRole> userRoleDOList = roleSet.stream().map(r -> {
             UserRole userRoleDO = new UserRole();
@@ -220,4 +225,3 @@ public class UserServiceImpl implements UserService {
         };
     }
 }
-

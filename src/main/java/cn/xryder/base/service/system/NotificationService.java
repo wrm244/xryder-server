@@ -15,8 +15,9 @@ public interface NotificationService {
 
     /**
      * 查询已发送的通知
-     * @param q 查询条件
-     * @param page 第几页
+     *
+     * @param q        查询条件
+     * @param page     第几页
      * @param pageSize 每页行数
      * @param username 发送人账户
      * @return 分页数据

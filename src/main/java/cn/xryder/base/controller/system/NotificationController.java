@@ -41,7 +41,7 @@ public class NotificationController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize,
             Principal principal
-            ) {
+    ) {
         if (page <= 1) {
             page = 1;
         }

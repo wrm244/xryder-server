@@ -2,7 +2,6 @@ package cn.xryder.base.service.user;
 
 import cn.xryder.base.domain.entity.system.UserNotification;
 import cn.xryder.base.domain.vo.MailVO;
-import cn.xryder.base.repo.system.NotificationRepo;
 import cn.xryder.base.repo.system.UserNotificationRepo;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +15,7 @@ import java.util.List;
  * @Date: 2024/9/26 15:27
  */
 @Service
-public class MailServiceImpl implements MailService{
+public class MailServiceImpl implements MailService {
     private final UserNotificationRepo userNotificationRepo;
     private final int READ = 1;
 
@@ -35,13 +34,13 @@ public class MailServiceImpl implements MailService{
             notifications = userNotificationRepo.findTop100ByUsername(username, limit);
         }
         List<MailVO> mails = new ArrayList<>();
-        for (UserNotification userNotification: notifications) {
+        for (UserNotification userNotification : notifications) {
             mails.add(MailVO.builder()
-                            .id(userNotification.getNotification().getId())
-                            .title(userNotification.getNotification().getTitle())
-                            .content(userNotification.getNotification().getContent())
-                            .createTime(userNotification.getNotification().getCreateTime())
-                            .hasRead(userNotification.getStatus() == READ)
+                    .id(userNotification.getNotification().getId())
+                    .title(userNotification.getNotification().getTitle())
+                    .content(userNotification.getNotification().getContent())
+                    .createTime(userNotification.getNotification().getCreateTime())
+                    .hasRead(userNotification.getStatus() == READ)
                     .build());
         }
         return mails;

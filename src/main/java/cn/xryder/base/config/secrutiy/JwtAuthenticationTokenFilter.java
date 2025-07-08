@@ -23,12 +23,14 @@ import java.util.Set;
  * token校验过滤器
  * 当登录成功后，每次请求携带token进行访问，该过滤器会获取token，并从token解析出用户信息
  * 成功解析出用户信息后设置SecurityContextHolder为登录状态
+ *
  * @author: JoeTao
  * createAt: 2018/9/14
  */
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
+
     public JwtAuthenticationTokenFilter(JwtService jwtService) {
         this.jwtService = jwtService;
     }
@@ -40,7 +42,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         String token = null;
         String username = null;
         Boolean isAccessToken = false;
-        if(authHeader != null && authHeader.startsWith("Bearer ")){
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             try {
                 username = jwtService.extractUsername(token);
@@ -51,7 +53,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             }
         }
 
-        if(isAccessToken && username != null && SecurityContextHolder.getContext().getAuthentication() == null){
+        if (isAccessToken && username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             Set<GrantedAuthority> authoritiesFromToken = jwtService.getAuthoritiesFromToken(token);
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authoritiesFromToken);
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

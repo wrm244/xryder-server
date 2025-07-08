@@ -32,13 +32,13 @@ public class User extends BaseDO {
     private String nickname;
     /**
      * 加密后的密码
-     *
+     * <p>
      * 因为目前使用 {@link BCryptPasswordEncoder} 加密器，所以无需自己处理 salt 盐
      */
     private String password;
     /**
      * 帐号状态
-     *
+     * <p>
      * 枚举 {@link CommonStatusEnum}
      */
     private boolean enabled;
@@ -57,7 +57,7 @@ public class User extends BaseDO {
 
     /**
      * 用户性别
-     *
+     * <p>
      * 枚举类 {@link SexEnum}
      */
     private Integer sex;

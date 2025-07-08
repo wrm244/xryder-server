@@ -6,12 +6,14 @@ import cn.xryder.base.domain.vo.DepartmentVO;
 
 /**
  * 部门机构管理
+ *
  * @Author: joetao
  * @Date: 2024/8/2 10:40
  */
 public interface DepartmentService {
     /**
      * 查询所有部门
+     *
      * @param q 查询条件，模糊搜索部门名称
      * @return 部门信息
      */
@@ -19,6 +21,7 @@ public interface DepartmentService {
 
     /**
      * 根据部门id查询部门信息
+     *
      * @param id 部门id
      * @return 部门信息
      */
@@ -26,6 +29,7 @@ public interface DepartmentService {
 
     /**
      * 创建部门
+     *
      * @param department 部门信息
      * @return 部门信息
      */
@@ -33,7 +37,8 @@ public interface DepartmentService {
 
     /**
      * 移动部门
-     * @param id 部门id
+     *
+     * @param id       部门id
      * @param parentId 上级部门id
      * @return 部门信息
      */
@@ -41,7 +46,8 @@ public interface DepartmentService {
 
     /**
      * 更新部门信息
-     * @param id 部门id
+     *
+     * @param id      部门id
      * @param deptDTO 更新信息
      * @return 部门信息
      */
@@ -49,6 +55,7 @@ public interface DepartmentService {
 
     /**
      * 删除部门
+     *
      * @param id 部门id
      */
     void deleteDepartment(Long id);

@@ -34,7 +34,7 @@ import java.time.LocalDate;
  * @Date: 2024/12/3 16:16
  */
 @Service
-public class VisitorServiceImpl implements VisitorService{
+public class VisitorServiceImpl implements VisitorService {
     private final VisitorRepo visitorRepo;
 
     public VisitorServiceImpl(VisitorRepo visitorRepo) {

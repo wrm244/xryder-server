@@ -11,6 +11,7 @@ import java.util.List;
 public interface MailService {
     /**
      * 获取邮件
+     *
      * @param status 其他：全部邮件 0：未读邮件
      * @return
      */
@@ -18,15 +19,17 @@ public interface MailService {
 
     /**
      * 邮件已读
-     * @param id 用户通知id
+     *
+     * @param id   用户通知id
      * @param name 用户账户
      */
     void read(String name, Long id);
 
     /**
      * 删除邮件
+     *
      * @param name 用户账户
-     * @param id 用户通知id
+     * @param id   用户通知id
      */
     void delete(String name, Long id);
 }

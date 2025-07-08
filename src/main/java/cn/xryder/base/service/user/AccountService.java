@@ -14,6 +14,7 @@ import java.io.IOException;
 public interface AccountService {
     /**
      * 获取登录账户信息
+     *
      * @param username 用户名
      * @return 账户用户信息
      */
@@ -21,7 +22,8 @@ public interface AccountService {
 
     /**
      * 上传头像
-     * @param file 头像文件
+     *
+     * @param file     头像文件
      * @param username 用户名
      * @return 头像信息
      * @throws IOException 异常
@@ -30,16 +32,18 @@ public interface AccountService {
 
     /**
      * 更新账户信息
+     *
      * @param username 用户名
-     * @param account 更新信息
+     * @param account  更新信息
      * @return 账户信息
      */
     UserVO updateAccount(String username, AccountDTO account);
 
     /**
      * 修改密码
-     * @param username 用户名
-     * @param oldPassword  原密码
+     *
+     * @param username    用户名
+     * @param oldPassword 原密码
      * @param newPassword 新密码
      */
     void changePassword(String username, String oldPassword, String newPassword) throws Exception;

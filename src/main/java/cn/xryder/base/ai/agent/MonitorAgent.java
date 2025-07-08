@@ -24,8 +24,6 @@ package cn.xryder.base.ai.agent;
  */
 
 import cn.xryder.base.domain.vo.AiChatMonitorVO;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -38,7 +36,6 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
@@ -64,7 +61,7 @@ public class MonitorAgent {
     public MonitorAgent(OpenAiChatModel chatModel) {
         String systemPrompt = """
                 你是莱德队长，一个数据库专家
-                                
+                
                 """;
         this.chatClient = ChatClient.builder(chatModel)
                 .defaultSystem(systemPrompt)
@@ -76,28 +73,28 @@ public class MonitorAgent {
                 数据库表元信息：
                 表1名称:
                 monitor_visitor
-                                
+                
                 表1描述：
                 monitor_visitor 是一个记录用户访问系统记录的表。
-                                
+                
                 字段信息：
                 id
                 类型：BIGINT (bigint)
                 属性：自增主键
                 描述：唯一标识每条系统访问记录。
-                                
+                
                 useruuid
                 类型：VARCHAR
                 属性：非空
                 描述：用户标识，一般基于用户的浏览器生成唯一标识。
-                                
+                
                 visit——date
                 类型：DATETIME
                 属性：非空
                 描述：系统访问时间。
                 表用途：
                 记录独立访客，当天如果用户有访问系统会记录一条内容。
-                      
+                
                 任务指引：
                 如果需要根据上述表生成 SQL 查询，确保字段名和类型的正确性，返回字段是统计值的用value表示，放在返回字段最后。
                 """;
@@ -106,9 +103,9 @@ public class MonitorAgent {
     public SystemMessage getSystemMessage() {
         String systemText = """
                 你是一个专业的数据库管理员，非常擅长处理SQL。
-                               
+                
                 SQL 语句应符合以下要求：
-                                
+                
                 不使用任何 Markdown 或代码块标识（例如 sql）。
                 只返回纯 SQL 语句，不附带额外的注释或说明。
                 """;
@@ -119,9 +116,9 @@ public class MonitorAgent {
         String context = getDataSourceMeta();
         String userText = """
                 请生成标准的 SQL 查询语句。
-                            
+                
                 {context}
-                            
+                
                 问题：
                 {question}
                 """;
@@ -137,19 +134,16 @@ public class MonitorAgent {
         return chatClient.prompt(prompt).options(options).call().content();
     }
 
-    public record Result(String sql, List<Map<String, Object>> data, List<String> fields) {
-    }
-
     public String getTitle(String question) {
         String template = """
                 请根据问题提炼中文标题。
-                                
+                
                 以下是一个具体示例：
                 问题：哪天的系统访客数最多？
                 你的回答：系统访客最多的日期
-                                
+                
                 问题如下:
-                                
+                
                 {question}
                 """;
         PromptTemplate promptTemplate = new PromptTemplate(template);
@@ -163,13 +157,13 @@ public class MonitorAgent {
     public String getSummary(String question, String data) {
         String template = """
                 请根据问题和SQL查询结果对结果做一个概括，150字以内。
-                                
+                
                 问题如下:
-                                
+                
                 {question}
-                                
+                
                 查询结果如下：
-                                
+                
                 {data}
                 """;
         PromptTemplate promptTemplate = new PromptTemplate(template);
@@ -182,19 +176,19 @@ public class MonitorAgent {
     public String getChartType(String question, String data) {
         String template = """
                 请根据问题和数据推荐一个合适的用于展示该数据的图表, 只需要给出图表类型的英文名称。
-                                
+                
                 问题如下:
-                                
+                
                 {question}
-                                
+                
                 数据如下：
-                                
+                
                 {data}
-                                
+                
                 可选择的图表类型如下：
-                                
+                
                 Area, Line, Bar, Radar
-                                
+                
                 以下是一个具体示例：
                 问题：统计最近30天每天的网站访问量
                 你的回答：Line
@@ -223,9 +217,8 @@ public class MonitorAgent {
 // 转换为 Map 列表
                 for (Object row : resultList) {
                     Map<String, Object> map = new HashMap<>();
-                    if (row instanceof Object[]) {
+                    if (row instanceof Object[] rowArray) {
                         // 多列的情况
-                        Object[] rowArray = (Object[]) row;
                         for (int i = 0; i < fieldNames.size(); i++) {
                             map.put(fieldNames.get(i), rowArray[i]);
                         }
@@ -292,5 +285,8 @@ public class MonitorAgent {
     private String generateSqlWithErrorHandling(String originalSql, String errorMessage) {
         String question = "请根据以下 SQL 和错误信息修复 SQL：" + "\nSQL: " + originalSql + "\n错误信息: " + errorMessage + "\n注意：只需要返回新生成的SQL。";
         return generateSql(question);
+    }
+
+    public record Result(String sql, List<Map<String, Object>> data, List<String> fields) {
     }
 }

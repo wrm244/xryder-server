@@ -4,6 +4,7 @@ package cn.xryder.base.domain.vo;
  * @Author: joetao
  * @Date: 2024/8/2 15:17
  */
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

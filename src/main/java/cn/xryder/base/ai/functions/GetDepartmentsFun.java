@@ -10,6 +10,7 @@ import java.util.function.Function;
 
 /**
  * 部门查询函数
+ *
  * @Author: joetao
  * @Date: 2024/10/15 8:53
  */
@@ -42,7 +43,10 @@ public class GetDepartmentsFun implements Function<GetDepartmentsFun.Request, Ge
 
     }
 
-    public record DepartmentRecord(Long id, String name){}
-    public record Response(List<DepartmentRecord> departments) {}
+    public record DepartmentRecord(Long id, String name) {
+    }
+
+    public record Response(List<DepartmentRecord> departments) {
+    }
 
 }

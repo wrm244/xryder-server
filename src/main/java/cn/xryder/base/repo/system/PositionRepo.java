@@ -13,6 +13,7 @@ import java.util.List;
 public interface PositionRepo extends JpaRepository<Position, Long>, JpaSpecificationExecutor<Position> {
     /**
      * 根据部门id查询所有职位
+     *
      * @param deptId 部门id
      * @return 职位信息
      */
@@ -20,6 +21,7 @@ public interface PositionRepo extends JpaRepository<Position, Long>, JpaSpecific
 
     /**
      * 根据部门id删除所有职位
+     *
      * @param deptId 部门id
      */
     void deleteAllByDeptId(Long deptId);

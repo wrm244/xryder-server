@@ -17,12 +17,14 @@ public interface UserRoleRepo extends JpaRepository<UserRole, Long>, JpaSpecific
 
     /**
      * 根据用户账号删除用户角色信息
+     *
      * @param username 用户账号
      */
     void deleteAllByUsername(String username);
 
     /**
      * 根据角色id删除用户角色关系
+     *
      * @param roleId 角色id
      */
     void deleteAllByRoleId(Long roleId);

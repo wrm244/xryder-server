@@ -14,6 +14,7 @@ import java.util.Arrays;
 
 /**
  * 拦截标注了 @OperationLog 注解的方法，记录操作日志
+ *
  * @Author: joetao
  * @Date: 2024/9/13 10:00
  */
@@ -28,7 +29,8 @@ public class OperationLogAspect {
     }
 
     @Pointcut("@annotation(cn.xryder.base.config.OperationLog)")
-    public void logPointCut() {}
+    public void logPointCut() {
+    }
 
     @Around("logPointCut() && @annotation(operationLog)")
     public Object logAround(ProceedingJoinPoint joinPoint, OperationLog operationLog) throws Throwable {
@@ -57,14 +59,14 @@ public class OperationLogAspect {
             // 执行目标方法
             result = joinPoint.proceed();
         } catch (Exception e) {
-            logService.saveOperationLog(operationDescription, className + "." +methodName, argsString, username, -1);
+            logService.saveOperationLog(operationDescription, className + "." + methodName, argsString, username, -1);
             throw e;
         }
 
         long timeTaken = System.currentTimeMillis() - startTime;
         // 记录操作之后的信息
         log.info("操作完成: {}, 耗时: {} ms", operationDescription, timeTaken);
-        logService.saveOperationLog(operationDescription,className + "." +methodName, argsString, username, timeTaken);
+        logService.saveOperationLog(operationDescription, className + "." + methodName, argsString, username, timeTaken);
         return result;
     }
 }

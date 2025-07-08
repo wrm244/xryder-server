@@ -38,7 +38,8 @@ import java.time.LocalDate;
 @Repository
 public interface VisitorRepo extends JpaRepository<VisitorRecordDO, Long> {
     boolean existsByUserUUIDAndVisitDate(String userUUID, LocalDate visitDate);
-//
+
+    //
     @Query("SELECT COUNT(DISTINCT v.userUUID) FROM VisitorRecordDO v WHERE v.visitDate = :date")
     long countUniqueVisitors(@Param("date") LocalDate date);
 }

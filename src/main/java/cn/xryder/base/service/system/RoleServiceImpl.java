@@ -142,7 +142,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     private List<RolePermission> getRolePermissions(RoleDTO role, String username, Long roleId) {
-        Long[] permissions= role.getPermissions();
+        Long[] permissions = role.getPermissions();
         return Arrays.stream(permissions).map(p -> {
             RolePermissionKey rolePermissionKey = new RolePermissionKey();
             RolePermission rolePermission = new RolePermission();
@@ -161,7 +161,7 @@ public class RoleServiceImpl implements RoleService {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(criteriaBuilder.notEqual(root.get("name"), "管理员"));
             // 添加模糊查询条件
-            if ( q != null && !q.isEmpty()) {
+            if (q != null && !q.isEmpty()) {
                 predicates.add(criteriaBuilder.like(root.get("name"), "%" + q + "%"));
             }
 

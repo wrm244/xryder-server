@@ -32,7 +32,7 @@ public class UserController {
     @OperationLog("添加用户")
     @PostMapping
     @PreAuthorize("hasAuthority('system')")
-    public ResultJson<UserVO> addUser(@Valid  @RequestBody UserDTO user, Principal principal) {
+    public ResultJson<UserVO> addUser(@Valid @RequestBody UserDTO user, Principal principal) {
         UserVO createdUser = userService.addUser(user, principal.getName());
         return ResultJson.ok(createdUser);
     }

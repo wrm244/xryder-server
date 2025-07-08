@@ -45,9 +45,6 @@ public class QuestionClassifierAgent {
         this.chatModel = chatModel;
     }
 
-    record QuestionType(Integer type, String description) {
-    }
-
     //问题分类
     public Integer getQuestionType(String question) {
         String template = """
@@ -77,5 +74,8 @@ public class QuestionClassifierAgent {
                 .user(prompt.getContents())
                 .call()
                 .entity(QuestionType.class).type;
+    }
+
+    record QuestionType(Integer type, String description) {
     }
 }

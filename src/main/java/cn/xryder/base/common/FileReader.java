@@ -23,6 +23,31 @@ import java.util.List;
 @Component
 public class FileReader {
 
+    // 将单元格的值转换为字符串
+    private static String getCellValueAsString(Cell cell) {
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                // 如果是日期，返回日期字符串
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue().toString();
+                } else {
+                    // 处理长整型数字，避免科学计数法
+                    BigDecimal bigDecimalValue = BigDecimal.valueOf(cell.getNumericCellValue());
+                    return bigDecimalValue.toPlainString();  // 转换为不使用科学计数法的字符串
+                }
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case FORMULA:
+                return cell.getCellFormula();
+            case BLANK:
+                return "";
+            default:
+                return "Unknown Cell Type";
+        }
+    }
+
     // 读取TXT文件
     public String readTxtFile(MultipartFile file) throws IOException {
         StringBuilder content = new StringBuilder();
@@ -60,31 +85,6 @@ public class FileReader {
             }
         }
         return content.toString();
-    }
-
-    // 将单元格的值转换为字符串
-    private static String getCellValueAsString(Cell cell) {
-        switch (cell.getCellType()) {
-            case STRING:
-                return cell.getStringCellValue();
-            case NUMERIC:
-                // 如果是日期，返回日期字符串
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    return cell.getDateCellValue().toString();
-                } else {
-                    // 处理长整型数字，避免科学计数法
-                    BigDecimal bigDecimalValue = BigDecimal.valueOf(cell.getNumericCellValue());
-                    return bigDecimalValue.toPlainString();  // 转换为不使用科学计数法的字符串
-                }
-            case BOOLEAN:
-                return String.valueOf(cell.getBooleanCellValue());
-            case FORMULA:
-                return cell.getCellFormula();
-            case BLANK:
-                return "";
-            default:
-                return "Unknown Cell Type";
-        }
     }
 
     // 读取Docx文件

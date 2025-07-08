@@ -58,7 +58,7 @@ public class AccountController {
 
     @OperationLog("更新头像")
     @PostMapping("/avatar")
-    public ResultJson<Avatar> uploadAvatarImage(@RequestParam("file")MultipartFile file, Principal principal) throws IOException {
+    public ResultJson<Avatar> uploadAvatarImage(@RequestParam("file") MultipartFile file, Principal principal) throws IOException {
         return ResultJson.ok(accountService.saveAvatar(file, principal.getName()));
     }
 }

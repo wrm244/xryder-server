@@ -2,6 +2,7 @@ package cn.xryder.base.common;
 
 /**
  * 系统管理员账号信息
+ *
  * @Author: joetao
  * @Date: 2024/8/23 15:12
  */

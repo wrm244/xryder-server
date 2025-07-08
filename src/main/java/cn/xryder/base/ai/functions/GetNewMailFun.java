@@ -14,22 +14,16 @@ import java.util.function.BiFunction;
 
 /**
  * 获取新邮件函数
+ *
  * @Author: joetao
  * @Date: 2024/10/10 14:23
  */
 @Slf4j
-public class GetNewMailFun implements BiFunction<GetNewMailFun.Request, ToolContext , GetNewMailFun.Response> {
+public class GetNewMailFun implements BiFunction<GetNewMailFun.Request, ToolContext, GetNewMailFun.Response> {
     private final UserNotificationRepo userNotificationRepo;
 
     public GetNewMailFun(UserNotificationRepo userNotificationRepo) {
         this.userNotificationRepo = userNotificationRepo;
-    }
-    // 必须有参数
-    public record Request(Integer number) {
-    }
-
-    public record Response(List<MailVO> mails) {
-
     }
 
     @Override
@@ -41,7 +35,7 @@ public class GetNewMailFun implements BiFunction<GetNewMailFun.Request, ToolCont
         String username = (String) toolContext.getContext().get("username");
         List<UserNotification> notifications = userNotificationRepo.findTop100UnreadByUsername(username, limit);
         List<MailVO> mails = new ArrayList<>();
-        for (UserNotification userNotification: notifications) {
+        for (UserNotification userNotification : notifications) {
             mails.add(MailVO.builder()
                     .id(userNotification.getNotification().getId())
                     .title(userNotification.getNotification().getTitle())
@@ -50,5 +44,13 @@ public class GetNewMailFun implements BiFunction<GetNewMailFun.Request, ToolCont
                     .build());
         }
         return new Response(mails);
+    }
+
+    // 必须有参数
+    public record Request(Integer number) {
+    }
+
+    public record Response(List<MailVO> mails) {
+
     }
 }

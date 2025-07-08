@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/error", "/api/login", "/api/v1/publicKey"
                                 , "/api/v1/token", "/api/v1/ai/stream"
-                         )
+                        )
                         .permitAll()
                         .anyRequest()
                         .authenticated()
@@ -72,6 +72,7 @@ public class SecurityConfig {
         customUsernamePasswordAuthFilter.setAuthenticationManager(authenticationManager);
         return customUsernamePasswordAuthFilter;
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

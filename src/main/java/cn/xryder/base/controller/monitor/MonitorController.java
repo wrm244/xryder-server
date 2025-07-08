@@ -57,7 +57,7 @@ public class MonitorController {
 
     @OperationLog("智能监控问答")
     @GetMapping("/chat")
-    public ResultJson<AiChatMonitorVO> chat(@RequestParam(value = "question" )String question) throws JsonProcessingException {
+    public ResultJson<AiChatMonitorVO> chat(@RequestParam(value = "question") String question) throws JsonProcessingException {
         Integer questionType = questionClassifierAgent.getQuestionType(question);
         if (questionType == 1) {
             return ResultJson.ok(handleDataAnalyse(question));
@@ -69,7 +69,7 @@ public class MonitorController {
     private AiChatMonitorVO handleDataAnalyse(String message) throws JsonProcessingException {
         MonitorAgent.Result result = monitorAgent.analyse(message);
 
-        if(result.data().size() == 0) {
+        if (result.data().size() == 0) {
             throw new BadRequestException("未检索到数据！");
         }
         String title = monitorAgent.getTitle(message);

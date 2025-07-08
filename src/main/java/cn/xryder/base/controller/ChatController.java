@@ -156,8 +156,10 @@ public class ChatController {
             switch (contentType) {
                 case "text/plain" -> content = fileReader.readTxtFile(file);
                 case "text/csv" -> content = fileReader.readCsvFile(file);
-                case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" -> content = fileReader.readExcelFile(file);
-                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> content = fileReader.readDocxFile(file);
+                case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ->
+                        content = fileReader.readExcelFile(file);
+                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ->
+                        content = fileReader.readDocxFile(file);
                 case "application/pdf" -> content = fileReader.readPdfFile(file);
                 default -> throw new BadRequestException("不支持的文件类型！");
             }

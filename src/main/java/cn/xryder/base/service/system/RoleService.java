@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * 角色管理
+ *
  * @Author: joetao
  * @Date: 2024/8/20 15:20
  */
@@ -17,8 +18,9 @@ public interface RoleService {
 
     /**
      * 查询角色
-     * @param q 搜索条件
-     * @param page 第几页
+     *
+     * @param q        搜索条件
+     * @param page     第几页
      * @param pageSize 返回条数
      * @return 角色信息
      */
@@ -26,19 +28,22 @@ public interface RoleService {
 
     /**
      * 获取权限
+     *
      * @return 权限列表
      */
     List<PermissionVO> getPermissions();
 
     /**
      * 删除角色
+     *
      * @param id 角色id
      */
     void deleteRoles(Long id);
 
     /**
      * 更新角色
-     * @param role 角色信息
+     *
+     * @param role     角色信息
      * @param username 当前用户账号
      * @return 角色信息
      */

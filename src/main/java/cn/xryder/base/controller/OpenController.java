@@ -33,7 +33,7 @@ public class OpenController {
     }
 
     @GetMapping("/token")
-    public ResultJson<String> getToken(@RequestParam("refreshToken")String refreshToken) {
+    public ResultJson<String> getToken(@RequestParam("refreshToken") String refreshToken) {
         Boolean isRefreshToken = jwtService.isValidRefreshToken(refreshToken);
         if (!isRefreshToken) {
             return ResultJson.failure(ResultCode.INVALID_REFRESH_TOKEN, "无效的refreshToken");

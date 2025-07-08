@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 /**
  * 邮件发送函数
+ *
  * @Author: joetao
  * @Date: 2024/10/10 14:23
  */
@@ -31,12 +32,6 @@ public class SendMailFun implements BiFunction<SendMailFun.Request, ToolContext,
         this.notificationRepo = notificationRepo;
         this.userNotificationRepo = userNotificationRepo;
         this.userRepo = userRepo;
-    }
-
-    public record Request(String title, String content) {
-    }
-
-    public record Response(String result) {
     }
 
     @Override
@@ -64,5 +59,11 @@ public class SendMailFun implements BiFunction<SendMailFun.Request, ToolContext,
         });
         userNotificationRepo.saveAll(userNotifications);
         return new Response("邮件已成功发送给" + userNotifications.size() + "人！");
+    }
+
+    public record Request(String title, String content) {
+    }
+
+    public record Response(String result) {
     }
 }

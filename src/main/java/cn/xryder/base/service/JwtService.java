@@ -71,7 +71,7 @@ public class JwtService {
         return grantType.equals("accessToken");
     }
 
-    public String GenerateToken(String username, String authorities){
+    public String GenerateToken(String username, String authorities) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("grantType", "accessToken");
         // scope存放的是权限信息
@@ -80,14 +80,14 @@ public class JwtService {
         return createToken(claims, username, 3L);
     }
 
-    public String GenerateAiChatToken(String username){
+    public String GenerateAiChatToken(String username) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("grantType", "aiAccessToken");
         //有效期3分钟
         return createToken(claims, username, 60 * 24 * 15L);
     }
 
-    public String GenerateRefreshToken(String username){
+    public String GenerateRefreshToken(String username) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("grantType", "refreshToken");
         // 有效期15天
@@ -103,7 +103,7 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+ 1000 * 60 * minutes))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * minutes))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
 
