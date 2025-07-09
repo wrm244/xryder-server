@@ -69,19 +69,29 @@ public class RsaUtil {
             return null;
         }
 
+        byte[] en_byte = null;
+        byte[] res = null;
         try {
-            byte[] en_byte = Base64.decodeBase64(encryptText.getBytes());
+            en_byte = Base64.decodeBase64(encryptText.getBytes());
             Provider provider = new BouncyCastleProvider();
             Security.addProvider(provider);
             Cipher ci = Cipher.getInstance("RSA/ECB/PKCS1Padding", provider);
             PrivateKey privateKey = keyPair.getPrivate();
             ci.init(Cipher.DECRYPT_MODE, privateKey);
-            byte[] res = ci.doFinal(en_byte);
+            res = ci.doFinal(en_byte);
             return new String(res);
         } catch (Exception e) {
-            System.err.println("RSA解密失败，输入数据: " + encryptText);
-            System.err.println("错误信息: " + e.getMessage());
+            // 不记录加密数据，避免日志泄露
+            System.err.println("RSA解密失败: " + e.getMessage());
             throw e;
+        } finally {
+            // 清理敏感字节数组
+            if (en_byte != null) {
+                java.util.Arrays.fill(en_byte, (byte) 0);
+            }
+            if (res != null) {
+                java.util.Arrays.fill(res, (byte) 0);
+            }
         }
     }
 

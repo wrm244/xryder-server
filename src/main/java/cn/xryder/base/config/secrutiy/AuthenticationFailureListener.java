@@ -3,6 +3,7 @@ package cn.xryder.base.config.secrutiy;
 import cn.xryder.base.domain.entity.system.LoginLog;
 import cn.xryder.base.repo.system.LoginLogRepo;
 import cn.xryder.base.service.LoginAttemptService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.lang.NonNull;
@@ -19,14 +20,10 @@ import java.time.LocalDateTime;
  */
 @Component
 @Slf4j
+@AllArgsConstructor
 public class AuthenticationFailureListener implements ApplicationListener<AuthenticationFailureBadCredentialsEvent> {
     private final LoginAttemptService loginAttemptService;
     private final LoginLogRepo loginLogRepo;
-
-    public AuthenticationFailureListener(LoginAttemptService loginAttemptService, LoginLogRepo loginLogRepo) {
-        this.loginAttemptService = loginAttemptService;
-        this.loginLogRepo = loginLogRepo;
-    }
 
     @Override
     public void onApplicationEvent(@NonNull AuthenticationFailureBadCredentialsEvent event) {

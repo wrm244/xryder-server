@@ -3,6 +3,7 @@ package cn.xryder.base.config.secrutiy;
 import cn.xryder.base.domain.R;
 import cn.xryder.base.domain.ResultCode;
 import cn.xryder.base.service.JwtService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import jakarta.servlet.FilterChain;
@@ -31,16 +32,13 @@ import java.util.Set;
  */
 @Slf4j
 @Component
+@AllArgsConstructor
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     private static final String BEARER_PREFIX = "Bearer ";
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
     private final JwtService jwtService;
-
-    public JwtAuthenticationTokenFilter(JwtService jwtService) {
-        this.jwtService = jwtService;
-    }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,

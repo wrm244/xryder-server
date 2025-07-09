@@ -10,6 +10,8 @@ import cn.xryder.base.exception.custom.BadRequestException;
 import cn.xryder.base.exception.custom.ResourceNotFoundException;
 import cn.xryder.base.repo.AvatarRepo;
 import cn.xryder.base.repo.system.*;
+import lombok.AllArgsConstructor;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
  * @Date: 2024/8/15 16:45
  */
 @Service
+@AllArgsConstructor
 public class AccountServiceImpl implements AccountService {
     private final UserRepo userRepo;
     private final AvatarRepo avatarRepo;
@@ -37,18 +40,6 @@ public class AccountServiceImpl implements AccountService {
     private final RolePermissionRepo rolePermissionRepo;
     private final UserNotificationRepo userNotificationRepo;
     private final PasswordEncoder passwordEncoder;
-
-    public AccountServiceImpl(UserRepo userRepo, AvatarRepo avatarRepo, UserRoleRepo userRoleRepo, RoleRepo roleRepo, PermissionRepo permissionRepo, PositionRepo positionRepo, RolePermissionRepo rolePermissionRepo, UserNotificationRepo userNotificationRepo, PasswordEncoder passwordEncoder) {
-        this.userRepo = userRepo;
-        this.avatarRepo = avatarRepo;
-        this.userRoleRepo = userRoleRepo;
-        this.roleRepo = roleRepo;
-        this.permissionRepo = permissionRepo;
-        this.positionRepo = positionRepo;
-        this.rolePermissionRepo = rolePermissionRepo;
-        this.userNotificationRepo = userNotificationRepo;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     public UserVO getAccountInfo(String username) {
         User user = userRepo.findById(username).orElseThrow(() -> new ResourceNotFoundException("用户不存在！"));
@@ -80,13 +71,15 @@ public class AccountServiceImpl implements AccountService {
     private List<String> getPermissionsByRoles(Set<RoleVO> roles) {
         List<Long> roleIds = roles.stream().map(RoleVO::getId).toList();
         List<RolePermission> rolePermissions = rolePermissionRepo.findAllByIdRoleIdIn(roleIds);
-        List<Permission> permissions = permissionRepo.findAllByIdIn(rolePermissions.stream().map(rp -> rp.getId().getPermissionId()).collect(Collectors.toList()));
+        List<Permission> permissions = permissionRepo.findAllByIdIn(
+                rolePermissions.stream().map(rp -> rp.getId().getPermissionId()).collect(Collectors.toList()));
         return permissions.stream().map(Permission::getScope).toList();
     }
 
     private Set<RoleVO> getRoles(String username) {
         List<UserRole> userRoles = userRoleRepo.findAllByUsername(username);
-        List<Role> roles = roleRepo.findAllById(userRoles.stream().map(UserRole::getRoleId).collect(Collectors.toList()));
+        List<Role> roles = roleRepo
+                .findAllById(userRoles.stream().map(UserRole::getRoleId).collect(Collectors.toList()));
         return roles.stream().map(r -> {
             RoleVO roleVO = new RoleVO();
             roleVO.setId(r.getId());
@@ -134,18 +127,50 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void changePassword(String username, String oldPassword, String newPassword) throws Exception {
         User user = userRepo.findById(username).orElseThrow(() -> new ResourceNotFoundException("用户不存在！"));
-        String oldDecryptPassword = RsaUtil.decryptWithPrivate(oldPassword);
-        boolean matches = passwordEncoder.matches(oldDecryptPassword, user.getPassword());
-        if (!matches) {
-            throw new BadRequestException("密码错误！");
+
+        // 使用局部变量并及时清理
+        String oldDecryptPassword = null;
+        String newDecryptPassword = null;
+        char[] oldPlainChars = null;
+        char[] newPlainChars = null;
+
+        try {
+            // 解密旧密码
+            oldDecryptPassword = RsaUtil.decryptWithPrivate(oldPassword);
+            oldPlainChars = oldDecryptPassword.toCharArray();
+
+            // 验证旧密码
+            boolean matches = passwordEncoder.matches(oldDecryptPassword, user.getPassword());
+            if (!matches) {
+                throw new BadRequestException("密码错误！");
+            }
+
+            // 解密新密码
+            newDecryptPassword = RsaUtil.decryptWithPrivate(newPassword);
+            newPlainChars = newDecryptPassword.toCharArray();
+
+            // 验证新密码格式
+            if (!CommonUtil.isValidPassword(newDecryptPassword)) {
+                throw new BadRequestException("密码不符合要求！");
+            }
+
+            // 加密并保存新密码
+            String newEncodedPassword = passwordEncoder.encode(newDecryptPassword);
+            user.setPassword(newEncodedPassword);
+            user.setUpdateTime(LocalDateTime.now());
+            userRepo.save(user);
+
+        } finally {
+            // 清理敏感数据
+            if (oldPlainChars != null) {
+                java.util.Arrays.fill(oldPlainChars, '\0');
+            }
+            if (newPlainChars != null) {
+                java.util.Arrays.fill(newPlainChars, '\0');
+            }
+            // 清空字符串引用
+            oldDecryptPassword = null;
+            newDecryptPassword = null;
         }
-        String newDecryptPassword = RsaUtil.decryptWithPrivate(newPassword);
-        if (!CommonUtil.isValidPassword(newDecryptPassword)) {
-            throw new BadRequestException("密码不符合要求！");
-        }
-        String newEncodedPassword = passwordEncoder.encode(newDecryptPassword);
-        user.setPassword(newEncodedPassword);
-        user.setUpdateTime(LocalDateTime.now());
-        userRepo.save(user);
     }
 }

@@ -10,6 +10,7 @@ import cn.xryder.base.repo.system.UserRepo;
 import cn.xryder.base.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
@@ -28,17 +29,12 @@ import java.util.Optional;
  */
 @Component
 @Slf4j
+@AllArgsConstructor
 public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
     private static final String UNKNOWN = "unknown";
     private final JwtService jwtService;
     private final UserRepo userRepo;
     private final LoginLogRepo loginLogRepo;
-
-    public MyAuthenticationSuccessHandler(JwtService jwtService, UserRepo userRepo, LoginLogRepo loginLogRepo) {
-        this.jwtService = jwtService;
-        this.userRepo = userRepo;
-        this.loginLogRepo = loginLogRepo;
-    }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -101,7 +97,7 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
             return "Unknown Device";
         }
 
-        // 简单的设备识别逻辑
+        // 设备识别逻辑
         if (userAgent.contains("Mobile") || userAgent.contains("Android") || userAgent.contains("iPhone")) {
             return "Mobile Device";
         } else if (userAgent.contains("Chrome")) {

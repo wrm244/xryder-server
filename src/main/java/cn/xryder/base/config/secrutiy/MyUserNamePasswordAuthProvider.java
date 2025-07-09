@@ -12,8 +12,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * @Author: joetao
- * @Date: 2024/7/31 14:29
+ * 自定义用户名密码认证
+ * 
+ * @author wrm244
  */
 @Slf4j
 public class MyUserNamePasswordAuthProvider implements AuthenticationProvider {
@@ -29,25 +30,52 @@ public class MyUserNamePasswordAuthProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
-        log.debug("原始密码: {}", password);
+        log.debug("开始认证用户: {}", username);
+
+        // 使用 char[] 来存储明文密码，减少内存暴露时间
+        char[] plainPassword = null;
         try {
             if (passwordEncrypted) {
                 // 先进行URL解码，然后再进行RSA解密
                 String urlDecodedPassword = java.net.URLDecoder.decode(password, "UTF-8");
-                log.debug("URL解码后的密码: {}", urlDecodedPassword);
-                password = RsaUtil.decryptWithPrivate(urlDecodedPassword);
-                log.debug("RSA解密后的密码: {}", password);
+                log.debug("密码解密处理中...");
+                String decryptedPassword = RsaUtil.decryptWithPrivate(urlDecodedPassword);
+                plainPassword = decryptedPassword.toCharArray();
+
+                // 立即清除解密后的字符串
+                decryptedPassword = null;
+                password = new String(plainPassword);
+            } else {
+                plainPassword = password.toCharArray();
             }
         } catch (Exception e) {
-            log.error("密码解密失败！原始密码: {}", authentication.getCredentials().toString(), e);
+            log.error("密码解密失败！用户: {}", username);
+            // 清理可能的敏感数据
+            if (plainPassword != null) {
+                java.util.Arrays.fill(plainPassword, '\0');
+            }
             throw new BadCredentialsException("账号或密码错误！");
         }
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        boolean matches = passwordEncoder.matches(password, userDetails.getPassword());
-        if (matches) {
-            return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+        try {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            boolean matches = passwordEncoder.matches(password, userDetails.getPassword());
+
+            if (matches) {
+                log.debug("用户 {} 认证成功", username);
+                return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            } else {
+                log.debug("用户 {} 密码不匹配", username);
+                throw new BadCredentialsException("账号或密码错误！");
+            }
+        } finally {
+            // 确保清理敏感数据
+            if (plainPassword != null) {
+                java.util.Arrays.fill(plainPassword, '\0');
+            }
+            // 清除密码变量
+            password = null;
         }
-        throw new BadCredentialsException("账号或密码错误！");
     }
 
     @Override
@@ -61,25 +89,5 @@ public class MyUserNamePasswordAuthProvider implements AuthenticationProvider {
 
     public void setPasswordEncrypted(boolean passwordEncrypted) {
         this.passwordEncrypted = passwordEncrypted;
-    }
-
-    /**
-     * 用于调试的方法，测试密码解密流程
-     */
-    public static void testPasswordDecryption(String encryptedPassword) {
-        try {
-            log.info("原始加密密码: {}", encryptedPassword);
-
-            // 先进行URL解码
-            String urlDecodedPassword = java.net.URLDecoder.decode(encryptedPassword, "UTF-8");
-            log.info("URL解码后的密码: {}", urlDecodedPassword);
-
-            // 再进行RSA解密
-            String decryptedPassword = RsaUtil.decryptWithPrivate(urlDecodedPassword);
-            log.info("RSA解密后的密码: {}", decryptedPassword);
-
-        } catch (Exception e) {
-            log.error("测试密码解密失败", e);
-        }
     }
 }
