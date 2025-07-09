@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+
 /**
- * @Author: joetao
- * @Date: 2024/4/23 08:35
+ * @author wrm244
  */
 @Component
 @Slf4j
@@ -25,7 +25,7 @@ public class MyAuthenticationFailureHandler implements AuthenticationFailureHand
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         PrintWriter printWriter = response.getWriter();
-        String body = R.failure(ResultCode.UNAUTHORIZED, exception.getMessage()).toString();
+        String body = R.error(ResultCode.UNAUTHORIZED, exception.getMessage()).toString();
         printWriter.write(body);
         printWriter.flush();
     }

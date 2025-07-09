@@ -23,13 +23,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+
 /**
- * @Author: joetao
- * @Date: 2024/4/18 15:18
+ * @author wrm244
  */
 @Component
 @Slf4j
 public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+    private static final String UNKNOWN = "unknown";
     private final JwtService jwtService;
     private final UserRepo userRepo;
     private final LoginLogRepo loginLogRepo;
@@ -68,20 +69,20 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         PrintWriter printWriter = response.getWriter();
-        String body = R.ok(accessTokenVO).toJsonString();
+        String body = R.ok(accessTokenVO).toString();
         printWriter.write(body);
         printWriter.flush();
     }
 
     public String getClientIp(HttpServletRequest request) {
         String ipAddress = request.getHeader("X-Forwarded-For");
-        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+        if (ipAddress == null || ipAddress.isEmpty() || UNKNOWN.equalsIgnoreCase(ipAddress)) {
             ipAddress = request.getHeader("Proxy-Client-IP");
         }
-        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+        if (ipAddress == null || ipAddress.isEmpty() || UNKNOWN.equalsIgnoreCase(ipAddress)) {
             ipAddress = request.getHeader("WL-Proxy-Client-IP");
         }
-        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+        if (ipAddress == null || ipAddress.isEmpty() || UNKNOWN.equalsIgnoreCase(ipAddress)) {
             ipAddress = request.getRemoteAddr();
         }
         return ipAddress;

@@ -1,10 +1,14 @@
 package cn.xryder.base.domain;
 
+import lombok.Getter;
+
 /**
  * @author Joetao
  * 状态码
  * Created by jt on 2018/3/8.
  */
+
+@Getter
 public enum ResultCode {
     /*
     请求返回状态码和说明信息
@@ -18,23 +22,13 @@ public enum ResultCode {
     TOKEN_EXPIRED(405, "token过期"),
     CONFLICT(409, "资源已存在"),
     SQL_ERROR(410, "sql执行错误"),
-    SERVER_ERROR(500, "服务器内部错误"),
-
-    ;
+    SERVER_ERROR(500, "服务器内部错误");
     private final int code;
     private final String msg;
 
     ResultCode(int code, String msg) {
         this.code = code;
         this.msg = msg;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public String getMsg() {
-        return msg;
     }
 
 }

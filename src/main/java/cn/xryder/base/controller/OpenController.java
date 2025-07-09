@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @Author: joetao
- * @Date: 2024/4/18 9:21
+ * @author wrm244
  */
 @RequestMapping("/api/v1")
 @RestController
@@ -34,9 +33,9 @@ public class OpenController {
 
     @GetMapping("/token")
     public R<String> getToken(@RequestParam("refreshToken") String refreshToken) {
-        Boolean isRefreshToken = jwtService.isValidRefreshToken(refreshToken);
+        boolean isRefreshToken = jwtService.isValidRefreshToken(refreshToken);
         if (!isRefreshToken) {
-            return R.failure(ResultCode.INVALID_REFRESH_TOKEN, "无效的refreshToken");
+            return R.error(ResultCode.INVALID_REFRESH_TOKEN, "无效的refreshToken");
         }
         String username = jwtService.extractUsername(refreshToken);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);

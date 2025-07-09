@@ -14,11 +14,9 @@ import java.io.PrintWriter;
 import java.io.Serial;
 import java.io.Serializable;
 
+
 /**
- * 验证为未登陆状态会进入此方法
- *
- * @author: JoeTao
- * createAt: 2018/9/20
+ * @author wrm244
  */
 @Component
 @Slf4j
@@ -36,7 +34,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint,
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         PrintWriter printWriter = response.getWriter();
-        String body = R.failure(ResultCode.UNAUTHORIZED, "未登录").toString();
+        String body = R.error(ResultCode.UNAUTHORIZED, "未登录").toString();
         printWriter.write(body);
         printWriter.flush();
     }

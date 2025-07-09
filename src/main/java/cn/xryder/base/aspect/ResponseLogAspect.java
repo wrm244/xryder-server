@@ -48,6 +48,7 @@ public class ResponseLogAspect {
     private static final String DIVIDER = "------------------------------------------------------------";
     private static final String REQUEST_PREFIX = ">>>>> 请求";
     private static final String RESPONSE_PREFIX = "<<<<< 响应";
+    private static final String UNKNOWN = "unknown";
 
     // 用于跟踪请求计数
     private static final AtomicLong REQUEST_COUNTER = new AtomicLong(0);
@@ -148,11 +149,10 @@ public class ResponseLogAspect {
             // 获取请求ID
             Long requestId = null;
             RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
-            if (attributes instanceof ServletRequestAttributes) {
-                HttpServletRequest request = ((ServletRequestAttributes) attributes).getRequest();
+            if (attributes instanceof ServletRequestAttributes servletRequestAttributes) {
+                HttpServletRequest request = servletRequestAttributes.getRequest();
                 requestId = (Long) request.getAttribute("requestId");
             }
-
             final Long finalRequestId = requestId;
             final RequestAttributes finalAttributes = attributes;
 
@@ -163,9 +163,9 @@ public class ResponseLogAspect {
                     RequestContextHolder.setRequestAttributes(finalAttributes, true);
 
                     // 根据响应状态预先确定日志级别
-                    boolean isErrorLog = r.isFailure() && log.isErrorEnabled();
+                    boolean isErrorLog = r.isError() && log.isErrorEnabled();
                     boolean isWarnLog = r.isWarn() && log.isWarnEnabled();
-                    boolean isInfoLog = !r.isFailure() && !r.isWarn() && log.isInfoEnabled();
+                    boolean isInfoLog = !r.isError() && !r.isWarn() && log.isInfoEnabled();
 
                     if (!isErrorLog && !isWarnLog && !isInfoLog) {
                         return;
@@ -200,7 +200,7 @@ public class ResponseLogAspect {
      */
     private String buildResponseLogMessage(R<?> r, Long requestId) {
         String status;
-        if (r.isFailure()) {
+        if (r.isError()) {
             status = "错误";
         } else if (r.isWarn()) {
             status = "警告";
@@ -321,12 +321,12 @@ public class ResponseLogAspect {
             String ip = null;
             for (String header : headers) {
                 ip = request.getHeader(header);
-                if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+                if (ip != null && !ip.isEmpty() && !UNKNOWN.equalsIgnoreCase(ip)) {
                     break;
                 }
             }
 
-            if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            if (ip == null || ip.isEmpty() || UNKNOWN.equalsIgnoreCase(ip)) {
                 ip = request.getRemoteAddr();
             }
 
@@ -339,7 +339,7 @@ public class ResponseLogAspect {
         } catch (Exception e) {
             log.error("获取客户端IP地址失败", e);
         }
-        return "unknown";
+        return UNKNOWN;
     }
 
     /**

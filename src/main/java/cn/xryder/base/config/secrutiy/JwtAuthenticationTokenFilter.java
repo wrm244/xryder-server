@@ -4,6 +4,7 @@ import cn.xryder.base.domain.R;
 import cn.xryder.base.domain.ResultCode;
 import cn.xryder.base.service.JwtService;
 import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,8 +25,7 @@ import java.util.Set;
  * 当登录成功后，每次请求携带token进行访问，该过滤器会获取token，并从token解析出用户信息
  * 成功解析出用户信息后设置SecurityContextHolder为登录状态
  *
- * @author: JoeTao
- * createAt: 2018/9/14
+ * @author wrm244
  */
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
@@ -36,12 +36,12 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, @Nonnull HttpServletResponse response, @Nonnull FilterChain chain) throws ServletException, IOException {
         //校验token， 并将token解析出的用户信息保存到SecurityContextHolder中
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String username = null;
-        Boolean isAccessToken = false;
+        boolean isAccessToken = false;
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             try {
@@ -68,7 +68,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         PrintWriter printWriter = response.getWriter();
-        String body = R.failure(ResultCode.TOKEN_EXPIRED).toString();
+        String body = R.error(ResultCode.TOKEN_EXPIRED).toString();
         printWriter.write(body);
         printWriter.flush();
     }

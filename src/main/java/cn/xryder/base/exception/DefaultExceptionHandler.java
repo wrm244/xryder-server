@@ -18,39 +18,39 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class DefaultExceptionHandler {
     @ExceptionHandler({BadRequestException.class})
-    public R<?> handleBadRequestException(BadRequestException e) {
-        return R.failure(ResultCode.BAD_REQUEST, e.getMessage());
+    public R<Object> handleBadRequestException(BadRequestException e) {
+        return R.error(ResultCode.BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler({NotAllowedException.class})
-    public R<?> handleNotAllowedException(NotAllowedException e) {
-        return R.failure(ResultCode.BAD_REQUEST, e.getMessage());
+    public R<Object> handleNotAllowedException(NotAllowedException e) {
+        return R.error(ResultCode.BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler({ResourceNotFoundException.class})
-    public R<?> handleResourceNotFoundException(ResourceNotFoundException e) {
-        return R.failure(ResultCode.NOT_FOUND, e.getMessage());
+    public R<Object> handleResourceNotFoundException(ResourceNotFoundException e) {
+        return R.error(ResultCode.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler({ResourceConflictException.class})
-    public R<?> handleResourceConflictException(ResourceConflictException e) {
-        return R.failure(ResultCode.CONFLICT, e.getMessage());
+    public R<Object> handleResourceConflictException(ResourceConflictException e) {
+        return R.error(ResultCode.CONFLICT, e.getMessage());
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
-    public R<?> handleExpiredJwtException(ExpiredJwtException e) {
-        return R.failure(ResultCode.TOKEN_EXPIRED, e.getMessage());
+    public R<Object> handleExpiredJwtException(ExpiredJwtException e) {
+        return R.error(ResultCode.TOKEN_EXPIRED, e.getMessage());
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public R<?> handleAccessDeniedException(AccessDeniedException e) {
-        return R.failure(ResultCode.FORBIDDEN, e.getMessage());
+    public R<Object> handleAccessDeniedException(AccessDeniedException e) {
+        return R.error(ResultCode.FORBIDDEN, e.getMessage());
     }
 
     @ExceptionHandler({ServerException.class})
-    public R<?> handleServerException(Exception e) {
+    public R<Object> handleServerException(Exception e) {
         log.error(e.getMessage());
-        return R.failure(ResultCode.SERVER_ERROR, e.getMessage());
+        return R.error(ResultCode.SERVER_ERROR, e.getMessage());
     }
 
 }
