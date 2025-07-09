@@ -11,7 +11,6 @@ import cn.xryder.base.exception.custom.ResourceNotFoundException;
 import cn.xryder.base.repo.AvatarRepo;
 import cn.xryder.base.repo.system.*;
 import lombok.AllArgsConstructor;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

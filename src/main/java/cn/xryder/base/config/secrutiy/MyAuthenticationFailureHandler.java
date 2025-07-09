@@ -14,6 +14,8 @@ import java.io.PrintWriter;
 
 
 /**
+ * 认证失败处理
+ *
  * @author wrm244
  */
 @Component

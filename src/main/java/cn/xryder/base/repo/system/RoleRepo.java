@@ -16,7 +16,7 @@ public interface RoleRepo extends JpaRepository<Role, Long>, JpaSpecificationExe
 
     /**
      * 根据角色名称查找角色
-     * 
+     *
      * @param name 角色名称
      * @return 角色信息
      */
@@ -24,7 +24,7 @@ public interface RoleRepo extends JpaRepository<Role, Long>, JpaSpecificationExe
 
     /**
      * 根据角色名称和类型查找角色
-     * 
+     *
      * @param name 角色名称
      * @param type 角色类型
      * @return 角色信息

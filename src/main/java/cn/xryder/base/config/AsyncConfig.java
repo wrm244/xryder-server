@@ -6,6 +6,8 @@ import org.springframework.core.task.TaskExecutor;
 
 /**
  * 全局调用虚拟线程异步配置
+ *
+ * @author wrm244
  */
 @Configuration
 public class AsyncConfig {

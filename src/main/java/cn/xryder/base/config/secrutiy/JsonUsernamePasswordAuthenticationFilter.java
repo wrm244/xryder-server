@@ -1,5 +1,6 @@
 package cn.xryder.base.config.secrutiy;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,12 +13,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.util.Map;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * 支持JSON格式登录的自定义认证过滤器
  * 从请求body中读取JSON格式的username和password
- * 
+ *
  * @author wrm244
  */
 @Slf4j
@@ -28,15 +28,13 @@ public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
     public JsonUsernamePasswordAuthenticationFilter() {
         super();
         // 设置登录路径和请求方法
-        setRequiresAuthenticationRequestMatcher(
-                request -> "/api/login".equals(request.getRequestURI()) && "POST".equals(request.getMethod()));
+        setRequiresAuthenticationRequestMatcher(request -> "/api/login".equals(request.getRequestURI()) && "POST".equals(request.getMethod()));
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
-        if (!request.getMethod().equals("POST")) {
+        if (!"POST".equals(request.getMethod())) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }
 
@@ -48,7 +46,7 @@ public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
         if (contentType != null && contentType.contains("application/json")) {
             // 从JSON body中读取用户名和密码
             try {
-                TypeReference<Map<String, String>> typeRef = new TypeReference<Map<String, String>>() {
+                TypeReference<Map<String, String>> typeRef = new TypeReference<>() {
                 };
                 Map<String, String> loginData = objectMapper.readValue(request.getInputStream(), typeRef);
                 username = loginData.get("username");

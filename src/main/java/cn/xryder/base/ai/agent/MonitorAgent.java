@@ -24,6 +24,7 @@ import java.util.Map;
 
 /**
  * 监控分析AI智能体
+ *
  * @author joetao
  * @since 2025/1/17 14:43
  */
@@ -39,7 +40,7 @@ public class MonitorAgent {
                 你是莱德队长，一个数据库专家
                 
                 """;
-        this.chatClient = ChatClient.builder(chatModel) 
+        this.chatClient = ChatClient.builder(chatModel)
                 .defaultSystem(systemPrompt)
                 .build();
     }

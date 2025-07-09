@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 /**
  * JWT服务类 - 负责JWT令牌的生成、解析和验证
- * 
+ *
  * @Author: joetao
  * @Date: 2024/7/31 13:47
  * @Updated: 2025/7/9 优化代码结构和安全性
@@ -40,75 +40,16 @@ public class JwtService {
     private static final long ACCESS_TOKEN_VALIDITY = 1L;
     private static final long REFRESH_TOKEN_VALIDITY = 60L * 24 * 15; // 15天
     private static final long AI_TOKEN_VALIDITY = 60L * 24 * 15; // 15天
-
+    // 存储RefreshToken映射：username -> Set<RefreshTokenInfo> (支持多设备登录)
+    private final Map<String, Set<RefreshTokenInfo>> userRefreshTokenMap = new ConcurrentHashMap<>();
+    // RefreshToken黑名单 (存储被撤销的token JTI)
+    private final Set<String> revokedRefreshTokens = ConcurrentHashMap.newKeySet();
     // JWT密钥 - 建议从配置文件读取
     @Value("${jwt.secret:357638792F423F4428472B4B62L0E5S368566D597133743677397A2443264629}")
     private String jwtSecret;
-
     // RefreshToken专用密钥 - 增强安全性
     @Value("${jwt.refresh-secret:457638792F423F4428472B4B62L0E5S368566D597133743677397A2443264630}")
     private String refreshTokenSecret;
-
-    // 存储RefreshToken映射：username -> Set<RefreshTokenInfo> (支持多设备登录)
-    private final Map<String, Set<RefreshTokenInfo>> userRefreshTokenMap = new ConcurrentHashMap<>();
-
-    // RefreshToken黑名单 (存储被撤销的token JTI)
-    private final Set<String> revokedRefreshTokens = ConcurrentHashMap.newKeySet();
-
-    /**
-     * RefreshToken信息内部类 - 增强版本
-     */
-    private static class RefreshTokenInfo {
-        private final String jti; // JWT ID - 唯一标识
-        private final Date expireTime; // 过期时间
-        private final String deviceInfo; // 设备信息
-        private final String clientIp; // 客户端IP
-        private final Date createdTime; // 创建时间
-
-        public RefreshTokenInfo(String jti, String token, Date expireTime,
-                String deviceInfo, String clientIp) {
-            this.jti = jti;
-            this.expireTime = expireTime;
-            this.deviceInfo = deviceInfo;
-            this.clientIp = clientIp;
-            this.createdTime = new Date();
-        }
-
-        public boolean isExpired() {
-            return new Date().after(expireTime);
-        }
-
-        public String getJti() {
-            return jti;
-        }
-
-        public String getDeviceInfo() {
-            return deviceInfo;
-        }
-
-        public String getClientIp() {
-            return clientIp;
-        }
-
-        public Date getCreatedTime() {
-            return createdTime;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null || getClass() != obj.getClass())
-                return false;
-            RefreshTokenInfo that = (RefreshTokenInfo) obj;
-            return Objects.equals(jti, that.jti);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(jti);
-        }
-    }
 
     /**
      * 从Token中提取用户名
@@ -579,6 +520,61 @@ public class JwtService {
         } catch (Exception e) {
             log.warn("从RefreshToken提取JTI失败: {}", e.getMessage());
             return null;
+        }
+    }
+
+    /**
+     * RefreshToken信息内部类 - 增强版本
+     */
+    private static class RefreshTokenInfo {
+        private final String jti; // JWT ID - 唯一标识
+        private final Date expireTime; // 过期时间
+        private final String deviceInfo; // 设备信息
+        private final String clientIp; // 客户端IP
+        private final Date createdTime; // 创建时间
+
+        public RefreshTokenInfo(String jti, String token, Date expireTime,
+                                String deviceInfo, String clientIp) {
+            this.jti = jti;
+            this.expireTime = expireTime;
+            this.deviceInfo = deviceInfo;
+            this.clientIp = clientIp;
+            this.createdTime = new Date();
+        }
+
+        public boolean isExpired() {
+            return new Date().after(expireTime);
+        }
+
+        public String getJti() {
+            return jti;
+        }
+
+        public String getDeviceInfo() {
+            return deviceInfo;
+        }
+
+        public String getClientIp() {
+            return clientIp;
+        }
+
+        public Date getCreatedTime() {
+            return createdTime;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null || getClass() != obj.getClass())
+                return false;
+            RefreshTokenInfo that = (RefreshTokenInfo) obj;
+            return Objects.equals(jti, that.jti);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(jti);
         }
     }
 }

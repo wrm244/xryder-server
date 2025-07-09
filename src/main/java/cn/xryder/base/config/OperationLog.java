@@ -8,11 +8,11 @@ import java.lang.annotation.Target;
 /**
  * 操作日志注解
  *
- * @Author: joetao
- * @Date: 2024/9/13 9:59
+ * @author wrm244
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OperationLog {
-    String value() default ""; // 操作描述
+    // 操作描述
+    String value() default "";
 }

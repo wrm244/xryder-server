@@ -48,7 +48,7 @@ public class ChatController {
     private final JwtService jwtService;
 
     public ChatController(OpenAiChatModel chatModel, FileReader fileReader, ObjectMapper objectMapper,
-            JwtService jwtService) {
+                          JwtService jwtService) {
         this.chatModel = chatModel;
         String systemPrompt = """
                 你是一个非常有帮助的智能助手.
@@ -80,9 +80,9 @@ public class ChatController {
     @OperationLog("发起对话")
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> stream(@RequestParam String message,
-            @RequestParam String conversationId,
-            @RequestParam(required = false) String files,
-            @RequestHeader("Authorization") String authHeader) throws JsonProcessingException {
+                               @RequestParam String conversationId,
+                               @RequestParam(required = false) String files,
+                               @RequestHeader("Authorization") String authHeader) throws JsonProcessingException {
 
         String username = "";
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -146,7 +146,7 @@ public class ChatController {
 
     @PostMapping("/upload")
     public String handleFileUpload(@RequestParam("file") MultipartFile file,
-            @RequestParam("conversationId") String conversationId) {
+                                   @RequestParam("conversationId") String conversationId) {
         if (file.isEmpty()) {
             throw new BadRequestException("文件为空！");
         }
@@ -161,9 +161,9 @@ public class ChatController {
                 case "text/plain" -> content = fileReader.readTxtFile(file);
                 case "text/csv" -> content = fileReader.readCsvFile(file);
                 case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ->
-                    content = fileReader.readExcelFile(file);
+                        content = fileReader.readExcelFile(file);
                 case "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ->
-                    content = fileReader.readDocxFile(file);
+                        content = fileReader.readDocxFile(file);
                 case "application/pdf" -> content = fileReader.readPdfFile(file);
                 default -> throw new BadRequestException("不支持的文件类型！");
             }

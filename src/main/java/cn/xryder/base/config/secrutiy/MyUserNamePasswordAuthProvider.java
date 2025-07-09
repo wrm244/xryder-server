@@ -1,6 +1,7 @@
 package cn.xryder.base.config.secrutiy;
 
 import cn.xryder.base.common.RsaUtil;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -11,20 +12,25 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * 自定义用户名密码认证
- * 
+ *
  * @author wrm244
  */
 @Slf4j
 public class MyUserNamePasswordAuthProvider implements AuthenticationProvider {
     private final UserDetailsService userDetailsService;
+    @Setter
     private PasswordEncoder passwordEncoder;
+    @Setter
     private boolean passwordEncrypted = false;
 
     public MyUserNamePasswordAuthProvider(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
+
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -37,14 +43,16 @@ public class MyUserNamePasswordAuthProvider implements AuthenticationProvider {
         try {
             if (passwordEncrypted) {
                 // 先进行URL解码，然后再进行RSA解密
-                String urlDecodedPassword = java.net.URLDecoder.decode(password, "UTF-8");
+                String urlDecodedPassword = java.net.URLDecoder.decode(password, StandardCharsets.UTF_8);
                 log.debug("密码解密处理中...");
                 String decryptedPassword = RsaUtil.decryptWithPrivate(urlDecodedPassword);
-                plainPassword = decryptedPassword.toCharArray();
+                if (decryptedPassword != null) {
+                    plainPassword = decryptedPassword.toCharArray();
+                }
 
-                // 立即清除解密后的字符串
-                decryptedPassword = null;
-                password = new String(plainPassword);
+                if (plainPassword != null) {
+                    password = new String(plainPassword);
+                }
             } else {
                 plainPassword = password.toCharArray();
             }
@@ -73,8 +81,6 @@ public class MyUserNamePasswordAuthProvider implements AuthenticationProvider {
             if (plainPassword != null) {
                 java.util.Arrays.fill(plainPassword, '\0');
             }
-            // 清除密码变量
-            password = null;
         }
     }
 
@@ -83,11 +89,4 @@ public class MyUserNamePasswordAuthProvider implements AuthenticationProvider {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
-    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    public void setPasswordEncrypted(boolean passwordEncrypted) {
-        this.passwordEncrypted = passwordEncrypted;
-    }
 }

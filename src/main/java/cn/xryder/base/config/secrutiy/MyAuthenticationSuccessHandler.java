@@ -38,7 +38,7 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-            Authentication authentication) throws IOException {
+                                        Authentication authentication) throws IOException {
         log.info("登录成功, 用户: {}", authentication.getPrincipal());
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         Optional<User> userOptional = userRepo.findById(loginUser.getUsername());
@@ -51,7 +51,6 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
         String token = jwtService.generateToken(loginUser.getUsername(),
                 StringUtils.join(loginUser.getAuthorities(), ","));
 
-        // 使用增强版的RefreshToken生成方法，包含设备信息
         String deviceInfo = getDeviceInfo(request);
         String clientIp = getClientIp(request);
         String refreshToken = jwtService.generateRefreshToken(loginUser.getUsername(), deviceInfo, clientIp);

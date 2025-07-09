@@ -3,13 +3,12 @@ package cn.xryder.base.config.secrutiy;
 import cn.xryder.base.domain.R;
 import cn.xryder.base.domain.ResultCode;
 import cn.xryder.base.service.JwtService;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,8 +40,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
-            @NonNull FilterChain chain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain) throws ServletException, IOException {
 
         String token = extractTokenFromRequest(request);
 
@@ -65,16 +63,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         }
 
         chain.doFilter(request, response);
-    }
-
-    /**
-     * Token验证结果枚举
-     */
-    private enum TokenValidationResult {
-        VALID, // 有效
-        EXPIRED, // 过期
-        INVALID, // 无效
-        NO_TOKEN // 无Token
     }
 
     /**
@@ -174,5 +162,19 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         printWriter.flush();
 
         log.debug("返回Token无效响应");
+    }
+
+    /**
+     * Token验证结果枚举
+     */
+    private enum TokenValidationResult {
+        // 有效
+        VALID,
+        // 过期
+        EXPIRED,
+        // 无效
+        INVALID,
+        // 无Token
+        NO_TOKEN
     }
 }

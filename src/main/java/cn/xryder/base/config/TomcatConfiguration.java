@@ -28,6 +28,7 @@ public class TomcatConfiguration {
             protocolHandler.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
         };
     }
+
     @Bean
     public RouterFunction<ServerResponse> sseRoutes() {
         return route(POST("/api/v1/ai/stream"), request ->

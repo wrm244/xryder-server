@@ -15,6 +15,8 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
+ * token 为空转到这里
+ *
  * @author wrm244
  */
 @Component
@@ -25,9 +27,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint,
     private static final long serialVersionUID = -8970718410437077606L;
 
     @Override
-    public void commence(HttpServletRequest request,
-            HttpServletResponse response,
-            AuthenticationException authException) throws IOException {
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         log.warn("未认证访问，请求地址：{}", request.getRequestURI());
         response.setStatus(HttpServletResponse.SC_OK);
         response.setCharacterEncoding("UTF-8");
