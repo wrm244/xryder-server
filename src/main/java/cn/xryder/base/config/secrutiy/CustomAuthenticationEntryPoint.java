@@ -14,7 +14,6 @@ import java.io.PrintWriter;
 import java.io.Serial;
 import java.io.Serializable;
 
-
 /**
  * @author wrm244
  */
@@ -27,14 +26,14 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint,
 
     @Override
     public void commence(HttpServletRequest request,
-                         HttpServletResponse response,
-                         AuthenticationException authException) throws IOException {
-        log.warn("token验证失败，请求地址：{}", request.getRequestURI());
+            HttpServletResponse response,
+            AuthenticationException authException) throws IOException {
+        log.warn("未认证访问，请求地址：{}", request.getRequestURI());
         response.setStatus(HttpServletResponse.SC_OK);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         PrintWriter printWriter = response.getWriter();
-        String body = R.error(ResultCode.UNAUTHORIZED, "未登录").toString();
+        String body = R.error(ResultCode.UNAUTHORIZED, "请先登录").toString();
         printWriter.write(body);
         printWriter.flush();
     }

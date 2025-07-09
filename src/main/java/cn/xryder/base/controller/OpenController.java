@@ -7,10 +7,9 @@ import cn.xryder.base.service.JwtService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * @author wrm244
@@ -31,15 +30,32 @@ public class OpenController {
         return R.ok(RsaUtil.getPublicKey());
     }
 
-    @GetMapping("/token")
-    public R<String> getToken(@RequestParam("refreshToken") String refreshToken) {
-        boolean isRefreshToken = jwtService.isValidRefreshToken(refreshToken);
-        if (!isRefreshToken) {
+    @PostMapping("/refreshToken")
+    public R<String> getToken(@RequestBody Map<String, String> request) {
+        String refreshToken = request.get("refreshToken");
+
+        if (StringUtils.isBlank(refreshToken)) {
+            return R.error(ResultCode.INVALID_REFRESH_TOKEN, "refreshToken不能为空");
+        }
+
+        if (!jwtService.isValidRefreshToken(refreshToken)) {
             return R.error(ResultCode.INVALID_REFRESH_TOKEN, "无效的refreshToken");
         }
-        String username = jwtService.extractUsername(refreshToken);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        return R.ok(jwtService.GenerateToken(username,
-                StringUtils.join(userDetails.getAuthorities(), ",")));
+
+        try {
+            // 使用专门的RefreshToken用户名提取方法
+            String username = jwtService.extractUsernameFromRefreshToken(refreshToken);
+            if (StringUtils.isBlank(username)) {
+                return R.error(ResultCode.INVALID_REFRESH_TOKEN, "无法从refreshToken中提取用户信息");
+            }
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            String authorities = StringUtils.join(userDetails.getAuthorities(), ",");
+            String accessToken = jwtService.generateToken(username, authorities);
+
+            return R.ok(accessToken);
+        } catch (Exception e) {
+            return R.error(ResultCode.INVALID_REFRESH_TOKEN, "生成访问令牌失败: " + e.getMessage());
+        }
     }
 }

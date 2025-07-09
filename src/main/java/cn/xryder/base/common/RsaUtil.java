@@ -28,7 +28,7 @@ public class RsaUtil {
 
     private static Map<String, String> rsaMap;
 
-    //生成RSA，并存放
+    // 生成RSA，并存放
     static {
         try {
             Provider provider = new BouncyCastleProvider();
@@ -50,11 +50,11 @@ public class RsaUtil {
         rsaMap = new HashMap<>();
         PublicKey publicKey = keyPair.getPublic();
         String publicKeyStr = new String(Base64.encodeBase64(publicKey.getEncoded()));
-        rsaMap.put(PRIVATE_KEY, publicKeyStr);
+        rsaMap.put(PUBLIC_KEY, publicKeyStr); // 公钥应该存储在PUBLIC_KEY下
 
         PrivateKey privateKey = keyPair.getPrivate();
         String privateKeyStr = new String(Base64.encodeBase64(privateKey.getEncoded()));
-        rsaMap.put(PUBLIC_KEY, privateKeyStr);
+        rsaMap.put(PRIVATE_KEY, privateKeyStr); // 私钥应该存储在PRIVATE_KEY下
     }
 
     /**
@@ -68,14 +68,21 @@ public class RsaUtil {
         if (StringUtils.isBlank(encryptText)) {
             return null;
         }
-        byte[] en_byte = Base64.decodeBase64(encryptText.getBytes());
-        Provider provider = new BouncyCastleProvider();
-        Security.addProvider(provider);
-        Cipher ci = Cipher.getInstance("RSA/ECB/PKCS1Padding", provider);
-        PrivateKey privateKey = keyPair.getPrivate();
-        ci.init(Cipher.DECRYPT_MODE, privateKey);
-        byte[] res = ci.doFinal(en_byte);
-        return new String(res);
+
+        try {
+            byte[] en_byte = Base64.decodeBase64(encryptText.getBytes());
+            Provider provider = new BouncyCastleProvider();
+            Security.addProvider(provider);
+            Cipher ci = Cipher.getInstance("RSA/ECB/PKCS1Padding", provider);
+            PrivateKey privateKey = keyPair.getPrivate();
+            ci.init(Cipher.DECRYPT_MODE, privateKey);
+            byte[] res = ci.doFinal(en_byte);
+            return new String(res);
+        } catch (Exception e) {
+            System.err.println("RSA解密失败，输入数据: " + encryptText);
+            System.err.println("错误信息: " + e.getMessage());
+            throw e;
+        }
     }
 
     /**
@@ -88,13 +95,13 @@ public class RsaUtil {
     public static byte[] encrypt(String plaintext) throws UnsupportedEncodingException {
         String encode = URLEncoder.encode(plaintext, StandardCharsets.UTF_8);
         RSAPublicKey rsaPublicKey = (RSAPublicKey) keyPair.getPublic();
-        //获取公钥指数
+        // 获取公钥指数
         BigInteger e = rsaPublicKey.getPublicExponent();
-        //获取公钥系数
+        // 获取公钥系数
         BigInteger n = rsaPublicKey.getModulus();
-        //获取明文字节数组
+        // 获取明文字节数组
         BigInteger m = new BigInteger(encode.getBytes());
-        //进行明文加密
+        // 进行明文加密
         BigInteger res = m.modPow(e, n);
         return res.toByteArray();
 
@@ -118,9 +125,9 @@ public class RsaUtil {
         BigInteger m = c.modPow(d, n);
         // 解密结果-字节数组
         byte[] mt = m.toByteArray();
-        //转成String,此时是乱码
+        // 转成String,此时是乱码
         String en = new String(mt);
-        //再进行编码,最后返回解密后得到的明文
+        // 再进行编码,最后返回解密后得到的明文
         return URLDecoder.decode(en, StandardCharsets.UTF_8);
     }
 

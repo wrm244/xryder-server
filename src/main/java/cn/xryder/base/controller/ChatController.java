@@ -7,6 +7,7 @@ import cn.xryder.base.exception.custom.BadRequestException;
 import cn.xryder.base.exception.custom.ServerException;
 import cn.xryder.base.service.JwtService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.exceptions.CsvException;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -46,7 +47,8 @@ public class ChatController {
     private final ObjectMapper objectMapper;
     private final JwtService jwtService;
 
-    public ChatController(OpenAiChatModel chatModel, FileReader fileReader, ObjectMapper objectMapper, JwtService jwtService) {
+    public ChatController(OpenAiChatModel chatModel, FileReader fileReader, ObjectMapper objectMapper,
+            JwtService jwtService) {
         this.chatModel = chatModel;
         String systemPrompt = """
                 你是一个非常有帮助的智能助手.
@@ -65,21 +67,22 @@ public class ChatController {
 
     @GetMapping("/token")
     public R<String> generate(Principal principal) {
-        String aiChatToken = jwtService.GenerateAiChatToken(principal.getName());
+        String aiChatToken = jwtService.generateAiChatToken(principal.getName());
         return R.ok(aiChatToken);
     }
 
     @GetMapping("/generate")
-    public Map<String, String> generate(@RequestParam(value = "message", defaultValue = "Tell me a joke") String message) {
+    public Map<String, String> generate(
+            @RequestParam(value = "message", defaultValue = "Tell me a joke") String message) {
         return Map.of("generation", chatModel.call(message));
     }
 
     @OperationLog("发起对话")
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> stream(@RequestParam String message,
-                               @RequestParam String conversationId,
-                               @RequestParam(required = false) String files,
-                               @RequestHeader("Authorization") String authHeader) throws JsonProcessingException {
+            @RequestParam String conversationId,
+            @RequestParam(required = false) String files,
+            @RequestHeader("Authorization") String authHeader) throws JsonProcessingException {
 
         String username = "";
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -129,20 +132,21 @@ public class ChatController {
         if (fileHashMap == null) {
             return "没有找到文件！";
         }
-        List<String> fileNames = objectMapper.readValue(files, List.class);
+        List<String> fileNames = objectMapper.readValue(files, new TypeReference<List<String>>() {
+        });
         StringBuilder content = new StringBuilder();
         for (String fileName : fileNames) {
             content.append("文件名：").append(fileName).append("\n");
             content.append(fileHashMap.get(fileName)).append("\n");
         }
-        //获取上传的文章后，清空该对话的文章缓存，该对话的缓存文章将存入对话记忆列表中。
+        // 获取上传的文章后，清空该对话的文章缓存，该对话的缓存文章将存入对话记忆列表中。
         conversationFileMap.remove(conversationId);
         return content.toString();
     }
 
     @PostMapping("/upload")
     public String handleFileUpload(@RequestParam("file") MultipartFile file,
-                                   @RequestParam("conversationId") String conversationId) {
+            @RequestParam("conversationId") String conversationId) {
         if (file.isEmpty()) {
             throw new BadRequestException("文件为空！");
         }
@@ -157,9 +161,9 @@ public class ChatController {
                 case "text/plain" -> content = fileReader.readTxtFile(file);
                 case "text/csv" -> content = fileReader.readCsvFile(file);
                 case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ->
-                        content = fileReader.readExcelFile(file);
+                    content = fileReader.readExcelFile(file);
                 case "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ->
-                        content = fileReader.readDocxFile(file);
+                    content = fileReader.readDocxFile(file);
                 case "application/pdf" -> content = fileReader.readPdfFile(file);
                 default -> throw new BadRequestException("不支持的文件类型！");
             }
@@ -174,7 +178,8 @@ public class ChatController {
 
     // 每天凌晨 1 点执行
     @Scheduled(cron = "0 0 1 * * ?")
-    private void clearMap() {
+    public void clearMap() {
         conversationFileMap.clear();
+        log.info("Cleared conversation file map at scheduled time");
     }
 }

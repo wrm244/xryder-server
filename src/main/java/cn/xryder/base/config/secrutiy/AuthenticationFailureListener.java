@@ -5,6 +5,7 @@ import cn.xryder.base.repo.system.LoginLogRepo;
 import cn.xryder.base.service.LoginAttemptService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +29,7 @@ public class AuthenticationFailureListener implements ApplicationListener<Authen
     }
 
     @Override
-    public void onApplicationEvent(AuthenticationFailureBadCredentialsEvent event) {
+    public void onApplicationEvent(@NonNull AuthenticationFailureBadCredentialsEvent event) {
         String username = event.getAuthentication().getName();
         log.warn("登录失败，用户名：{}", username);
         LoginLog loginLog = LoginLog.builder()

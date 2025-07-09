@@ -29,12 +29,17 @@ public class MyUserNamePasswordAuthProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
+        log.debug("原始密码: {}", password);
         try {
             if (passwordEncrypted) {
-                password = RsaUtil.decryptWithPrivate(password);
+                // 先进行URL解码，然后再进行RSA解密
+                String urlDecodedPassword = java.net.URLDecoder.decode(password, "UTF-8");
+                log.debug("URL解码后的密码: {}", urlDecodedPassword);
+                password = RsaUtil.decryptWithPrivate(urlDecodedPassword);
+                log.debug("RSA解密后的密码: {}", password);
             }
         } catch (Exception e) {
-            log.error("密码解密失败！");
+            log.error("密码解密失败！原始密码: {}", authentication.getCredentials().toString(), e);
             throw new BadCredentialsException("账号或密码错误！");
         }
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -56,5 +61,25 @@ public class MyUserNamePasswordAuthProvider implements AuthenticationProvider {
 
     public void setPasswordEncrypted(boolean passwordEncrypted) {
         this.passwordEncrypted = passwordEncrypted;
+    }
+
+    /**
+     * 用于调试的方法，测试密码解密流程
+     */
+    public static void testPasswordDecryption(String encryptedPassword) {
+        try {
+            log.info("原始加密密码: {}", encryptedPassword);
+
+            // 先进行URL解码
+            String urlDecodedPassword = java.net.URLDecoder.decode(encryptedPassword, "UTF-8");
+            log.info("URL解码后的密码: {}", urlDecodedPassword);
+
+            // 再进行RSA解密
+            String decryptedPassword = RsaUtil.decryptWithPrivate(urlDecodedPassword);
+            log.info("RSA解密后的密码: {}", decryptedPassword);
+
+        } catch (Exception e) {
+            log.error("测试密码解密失败", e);
+        }
     }
 }

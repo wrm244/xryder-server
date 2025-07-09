@@ -1,6 +1,8 @@
 package cn.xryder.base.config;
 
 import cn.xryder.base.config.secrutiy.*;
+import lombok.AllArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@AllArgsConstructor
 public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
@@ -31,43 +34,37 @@ public class SecurityConfig {
     private final MyAuthenticationFailureHandler myAuthenticationFailureHandler;
     private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(CustomAuthenticationEntryPoint customAuthenticationEntryPoint, JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter, MyAuthenticationSuccessHandler myAuthenticationSuccessHandler, MyAuthenticationFailureHandler myAuthenticationFailureHandler, UserDetailsService userDetailsService) {
-        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
-        this.jwtAuthenticationTokenFilter = jwtAuthenticationTokenFilter;
-        this.myAuthenticationSuccessHandler = myAuthenticationSuccessHandler;
-        this.myAuthenticationFailureHandler = myAuthenticationFailureHandler;
-        this.userDetailsService = userDetailsService;
-    }
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager)
+            throws Exception {
         http
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/error", "/api/login", "/api/v1/publicKey"
-                                , "/api/v1/token", "/api/v1/ai/stream"
-                        )
+                        .requestMatchers("/error", "/api/login", "/api/v1/publicKey", "/api/v1/refreshToken",
+                                "/api/v1/ai/stream")
                         .permitAll()
                         .anyRequest()
-                        .authenticated()
-                )
+                        .authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling((exceptions) -> exceptions
-                        .authenticationEntryPoint(customAuthenticationEntryPoint)
-                );
+                        .authenticationEntryPoint(customAuthenticationEntryPoint));
+
+        // 添加JWT认证过滤器
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // 添加自定义的JSON登录过滤器
+        http.addFilterBefore(getCustomUsernamePasswordAuthFilter(authenticationManager),
+                UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
     @Bean
-    public UsernamePasswordAuthenticationFilter getCustomUsernamePasswordAuthFilter(AuthenticationManager authenticationManager) {
-        UsernamePasswordAuthenticationFilter customUsernamePasswordAuthFilter = new UsernamePasswordAuthenticationFilter();
-        customUsernamePasswordAuthFilter.setRequiresAuthenticationRequestMatcher(
-                request -> "/api/login".equals(request.getRequestURI())
-                        && "POST".equals(request.getMethod())
-        );
+    JsonUsernamePasswordAuthenticationFilter getCustomUsernamePasswordAuthFilter(
+            AuthenticationManager authenticationManager) {
+        JsonUsernamePasswordAuthenticationFilter customUsernamePasswordAuthFilter = new JsonUsernamePasswordAuthenticationFilter();
         customUsernamePasswordAuthFilter.setAuthenticationSuccessHandler(myAuthenticationSuccessHandler);
         customUsernamePasswordAuthFilter.setAuthenticationFailureHandler(myAuthenticationFailureHandler);
         customUsernamePasswordAuthFilter.setAuthenticationManager(authenticationManager);
@@ -75,13 +72,14 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
-        MyUserNamePasswordAuthProvider myAuthenticationProvider = new MyUserNamePasswordAuthProvider(userDetailsService);
+    AuthenticationProvider authenticationProvider() {
+        MyUserNamePasswordAuthProvider myAuthenticationProvider = new MyUserNamePasswordAuthProvider(
+                userDetailsService);
         myAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         // 密码是否加解密
         myAuthenticationProvider.setPasswordEncrypted(true);
@@ -89,7 +87,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 }

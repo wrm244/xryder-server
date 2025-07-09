@@ -30,3 +30,12 @@ spring:
 logging:
   level:
     root: info
+jwt:
+  # AccessToken密钥
+  secret: 357638792F423F4428472B4B62L0E5S368566D597133743677397A2443264629
+  # RefreshToken专用密钥 (增强安全性)
+  refresh-secret: 457638792F423F4428472B4B62L0E5S368566D597133743677397A2443264630
+  # Token有效期配置（分钟）
+  access-token-validity: 3 # AccessToken 3分钟
+  refresh-token-validity: 21600 # RefreshToken 15天
+  ai-token-validity: 21600 # AI Token 15天

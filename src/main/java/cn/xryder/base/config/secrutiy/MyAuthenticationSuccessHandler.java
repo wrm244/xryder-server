@@ -23,7 +23,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-
 /**
  * @author wrm244
  */
@@ -42,7 +41,8 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
     }
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+            Authentication authentication) throws IOException {
         log.info("登录成功, 用户: {}", authentication.getPrincipal());
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         Optional<User> userOptional = userRepo.findById(loginUser.getUsername());
@@ -52,12 +52,16 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
             user.setLoginIp(getClientIp(request));
             userRepo.save(user);
         }
-        String token = jwtService.GenerateToken(loginUser.getUsername(),
+        String token = jwtService.generateToken(loginUser.getUsername(),
                 StringUtils.join(loginUser.getAuthorities(), ","));
-        String refreshToken = jwtService.GenerateRefreshToken(loginUser.getUsername());
+
+        // 使用增强版的RefreshToken生成方法，包含设备信息
+        String deviceInfo = getDeviceInfo(request);
+        String clientIp = getClientIp(request);
+        String refreshToken = jwtService.generateRefreshToken(loginUser.getUsername(), deviceInfo, clientIp);
         List<String> permissions = loginUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-        AccessTokenVO accessTokenVO =
-                new AccessTokenVO(loginUser.getUsername(), loginUser.getName(), permissions, token, refreshToken);
+        AccessTokenVO accessTokenVO = new AccessTokenVO(loginUser.getUsername(), loginUser.getName(), permissions,
+                token, refreshToken);
         LoginLog loginLog = LoginLog.builder()
                 .nickname(loginUser.getName())
                 .username(loginUser.getUsername())
@@ -86,5 +90,28 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
             ipAddress = request.getRemoteAddr();
         }
         return ipAddress;
+    }
+
+    /**
+     * 获取设备信息
+     */
+    public String getDeviceInfo(HttpServletRequest request) {
+        String userAgent = request.getHeader("User-Agent");
+        if (StringUtils.isBlank(userAgent)) {
+            return "Unknown Device";
+        }
+
+        // 简单的设备识别逻辑
+        if (userAgent.contains("Mobile") || userAgent.contains("Android") || userAgent.contains("iPhone")) {
+            return "Mobile Device";
+        } else if (userAgent.contains("Chrome")) {
+            return "Chrome Browser";
+        } else if (userAgent.contains("Firefox")) {
+            return "Firefox Browser";
+        } else if (userAgent.contains("Safari")) {
+            return "Safari Browser";
+        } else {
+            return "Desktop Browser";
+        }
     }
 }

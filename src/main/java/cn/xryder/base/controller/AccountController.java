@@ -44,7 +44,7 @@ public class AccountController {
 
     @OperationLog("修改账户密码")
     @PutMapping("/password")
-    public R changePassword(Principal principal, @RequestBody PasswordChangeDTO passwordChange) throws Exception {
+    public R<?> changePassword(Principal principal, @RequestBody PasswordChangeDTO passwordChange) throws Exception {
         String username = principal.getName();
         if ("admin".equals(username)) {
             throw new BadRequestException("不能修改超管账号！");
@@ -57,8 +57,8 @@ public class AccountController {
 
     @OperationLog("更新头像")
     @PostMapping("/avatar")
-    public R<Avatar> uploadAvatarImage(@RequestParam("file") MultipartFile file, Principal principal) throws IOException {
+    public R<Avatar> uploadAvatarImage(@RequestParam("file") MultipartFile file, Principal principal)
+            throws IOException {
         return R.ok(accountService.saveAvatar(file, principal.getName()));
     }
 }
-
