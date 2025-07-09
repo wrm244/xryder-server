@@ -19,17 +19,18 @@ spring:
     password: 34SWF7Kjyr3MHyHP
   ai:
     openai:
-      api-key: ${ZHIPU_AI_API_KEY}
-      base-url: https://open.bigmodel.cn/api/paas/
+      api-key: sk-W0rpStc95T7JVYVwDYc29IyirjtpPPby6SozFMQr17m8KWeo
+      base-url: https://api.suanli.cn/v1
       chat:
-        api-key: ${ZHIPU_AI_API_KEY}
-        base-url: https://open.bigmodel.cn/api/paas/
-        completions-path: /v4/chat/completions
+        api-key: sk-W0rpStc95T7JVYVwDYc29IyirjtpPPby6SozFMQr17m8KWeo
+        base-url: https://api.suanli.cn/v1
+        completions-path: /chat/completions
         options:
-          model: GLM-4-flash
+          model: free:QwQ-32B
 logging:
   level:
     root: info
+    cn.xryder.base.controller.ChatController: debug  # 保留ChatController的debug日志用于性能监控
 jwt:
   # AccessToken密钥
   secret: 357638792F423F4428472B4B62L0E5S368566D597133743677397A2443264629

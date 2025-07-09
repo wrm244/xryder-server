@@ -84,24 +84,43 @@ public class ChatController {
                                @RequestParam(required = false) String files,
                                @RequestHeader("Authorization") String authHeader) throws JsonProcessingException {
 
+        log.info("开始处理对话请求 - conversationId: {}, hasFiles: {}", conversationId, files != null && !files.isEmpty());
+        long startTime = System.currentTimeMillis();
+        
+        // 验证用户身份
         String username = "";
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             try {
                 username = jwtService.extractUsername(token);
+                log.debug("用户身份验证成功: {}", username);
             } catch (ExpiredJwtException e) {
-                return Flux.just("登录已过期！");
+                log.warn("用户Token已过期: {}", e.getMessage());
+                return Flux.just("data: 登录已过期！\n\n");
             }
         } else {
-            return Flux.just("登录已过期，请刷新当前页面！");
+            log.warn("无效的授权header");
+            return Flux.just("data: 登录已过期，请刷新当前页面！\n\n");
         }
+        
+        // 构建提示词
         String prompt;
-        if (files.length() > 0) {
-            String fileContext = getFiles(files, conversationId);
-            prompt = getFileBasePrompt(fileContext, message);
-        } else {
-            prompt = message;
+        try {
+            if (files != null && !files.isEmpty()) {
+                log.debug("处理文件上下文");
+                String fileContext = getFiles(files, conversationId);
+                prompt = getFileBasePrompt(fileContext, message);
+            } else {
+                prompt = message;
+            }
+        } catch (Exception e) {
+            log.error("处理文件上下文时发生错误: {}", e.getMessage(), e);
+            return Flux.just("data: 处理文件时发生错误，请重试！\n\n");
         }
+        
+        log.info("开始调用AI模型 - 耗时: {}ms", System.currentTimeMillis() - startTime);
+        
+        // 构建聊天流
         return chatClient.prompt()
                 .toolContext(Map.of("username", username))
                 .advisors(advisor -> advisor.param("chat_memory_conversation_id", conversationId)
@@ -110,7 +129,21 @@ public class ChatController {
                 .stream()
                 .content()
                 .filter(Objects::nonNull)
-                .map(content -> "'" + content); // 添加结束标识符
+                .filter(content -> !content.trim().isEmpty()) // 过滤空内容
+                .map(content -> "data: " + content + "\n\n") // 正确的SSE格式
+                .doOnNext(data -> log.trace("发送数据块: {}", data.substring(0, Math.min(50, data.length()))))
+                .doOnComplete(() -> {
+                    long totalTime = System.currentTimeMillis() - startTime;
+                    log.info("对话处理完成 - conversationId: {}, 总耗时: {}ms", conversationId, totalTime);
+                })
+                .doOnError(error -> {
+                    long totalTime = System.currentTimeMillis() - startTime;
+                    log.error("对话处理出错 - conversationId: {}, 耗时: {}ms, 错误: {}", 
+                             conversationId, totalTime, error.getMessage(), error);
+                })
+                .onErrorResume(error -> {
+                    return Flux.just("data: 系统繁忙，请稍后重试！\n\n");
+                });
     }
 
     private String getFileBasePrompt(String files, String question) {
@@ -127,18 +160,38 @@ public class ChatController {
     }
 
     private String getFiles(String files, String conversationId) throws JsonProcessingException {
-
+        log.debug("开始处理文件上下文 - conversationId: {}", conversationId);
+        
         HashMap<String, String> fileHashMap = conversationFileMap.get(conversationId);
         if (fileHashMap == null) {
+            log.warn("未找到conversationId对应的文件: {}", conversationId);
             return "没有找到文件！";
         }
-        List<String> fileNames = objectMapper.readValue(files, new TypeReference<List<String>>() {
-        });
-        StringBuilder content = new StringBuilder();
-        for (String fileName : fileNames) {
-            content.append("文件名：").append(fileName).append("\n");
-            content.append(fileHashMap.get(fileName)).append("\n");
+        
+        List<String> fileNames;
+        try {
+            fileNames = objectMapper.readValue(files, new TypeReference<List<String>>() {});
+        } catch (JsonProcessingException e) {
+            log.error("解析文件名列表失败: {}", e.getMessage());
+            throw e;
         }
+        
+        StringBuilder content = new StringBuilder();
+        int processedFiles = 0;
+        
+        for (String fileName : fileNames) {
+            String fileContent = fileHashMap.get(fileName);
+            if (fileContent != null) {
+                content.append("文件名：").append(fileName).append("\n");
+                content.append(fileContent).append("\n\n");
+                processedFiles++;
+            } else {
+                log.warn("文件不存在: {}", fileName);
+            }
+        }
+        
+        log.debug("文件处理完成 - 请求文件数: {}, 实际处理: {}", fileNames.size(), processedFiles);
+        
         // 获取上传的文章后，清空该对话的文章缓存，该对话的缓存文章将存入对话记忆列表中。
         conversationFileMap.remove(conversationId);
         return content.toString();
@@ -147,15 +200,22 @@ public class ChatController {
     @PostMapping("/upload")
     public String handleFileUpload(@RequestParam("file") MultipartFile file,
                                    @RequestParam("conversationId") String conversationId) {
+        log.info("开始处理文件上传 - conversationId: {}, 文件名: {}, 大小: {} bytes", 
+                conversationId, file.getOriginalFilename(), file.getSize());
+        long startTime = System.currentTimeMillis();
+        
         if (file.isEmpty()) {
             throw new BadRequestException("文件为空！");
         }
+        
         String contentType = file.getContentType();
         if (contentType == null) {
             throw new BadRequestException("不支持的文件类型");
         }
+        
         String originalFilename = file.getOriginalFilename();
         String content;
+        
         try {
             switch (contentType) {
                 case "text/plain" -> content = fileReader.readTxtFile(file);
@@ -168,11 +228,17 @@ public class ChatController {
                 default -> throw new BadRequestException("不支持的文件类型！");
             }
         } catch (IOException | CsvException e) {
+            log.error("文件读取失败 - 文件名: {}, 错误: {}", originalFilename, e.getMessage(), e);
             throw new ServerException("服务器错误！", e);
         }
 
         conversationFileMap.putIfAbsent(conversationId, HashMap.newHashMap(1));
         conversationFileMap.get(conversationId).put(originalFilename, content);
+        
+        long processingTime = System.currentTimeMillis() - startTime;
+        log.info("文件上传处理完成 - 文件名: {}, 内容长度: {} 字符, 耗时: {}ms", 
+                originalFilename, content.length(), processingTime);
+        
         return originalFilename;
     }
 
@@ -181,5 +247,15 @@ public class ChatController {
     public void clearMap() {
         conversationFileMap.clear();
         log.info("Cleared conversation file map at scheduled time");
+    }
+
+    @GetMapping("/status")
+    public Map<String, Object> getStatus() {
+        Map<String, Object> status = new HashMap<>();
+        status.put("conversationCount", conversationFileMap.size());
+        status.put("timestamp", System.currentTimeMillis());
+        status.put("memoryUsage", Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
+        status.put("totalMemory", Runtime.getRuntime().totalMemory());
+        return status;
     }
 }
