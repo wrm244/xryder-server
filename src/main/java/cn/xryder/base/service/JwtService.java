@@ -34,20 +34,17 @@ public class JwtService {
     public static final String ACCESS_TOKEN = "accessToken";
     public static final String REFRESH_TOKEN = "refreshToken";
     public static final String AI_ACCESS_TOKEN = "aiAccessToken";
-
-    // Token有效期常量（分钟）
-    @Value("${jwt.access-token-validity:30}")
-    private long ACCESS_TOKEN_VALIDITY;
-    @Value("${jwt.refresh-token-validity:21600}")
-    private long REFRESH_TOKEN_VALIDITY;
-    @Value("${jwt.ai-token-validity:21600}")
-    private long AI_TOKEN_VALIDITY;
-
     // 存储RefreshToken映射：username -> Set<RefreshTokenInfo> (支持多设备登录)
     private final Map<String, Set<RefreshTokenInfo>> userRefreshTokenMap = new ConcurrentHashMap<>();
     // RefreshToken黑名单 (存储被撤销的token JTI)
     private final Set<String> revokedRefreshTokens = ConcurrentHashMap.newKeySet();
-
+    // Token有效期常量（分钟）
+    @Value("${jwt.access-token-validity:30}")
+    private long accessTokenValidity;
+    @Value("${jwt.refresh-token-validity:21600}")
+    private long refreshTokenValidity;
+    @Value("${jwt.ai-token-validity:21600}")
+    private long aiTokenValidity;
     @Value("${jwt.secret}")
     private String jwtSecret;
 
@@ -77,8 +74,9 @@ public class JwtService {
     public boolean isTokenExpired(String token) {
         try {
             Claims claims = extractClaimsIntelligently(token);
-            if (claims == null)
+            if (claims == null) {
                 return true;
+            }
             Date expiration = claims.getExpiration();
             return expiration != null && expiration.before(new Date());
         } catch (Exception e) {
@@ -199,13 +197,13 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("grantType", ACCESS_TOKEN);
         claims.put("scope", authorities);
-        return createToken(claims, username, ACCESS_TOKEN_VALIDITY);
+        return createToken(claims, username, accessTokenValidity);
     }
 
     public String generateAiChatToken(String username) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("grantType", AI_ACCESS_TOKEN);
-        return createToken(claims, username, AI_TOKEN_VALIDITY);
+        return createToken(claims, username, aiTokenValidity);
     }
 
     /**
@@ -220,8 +218,8 @@ public class JwtService {
         claims.put("device", deviceInfo);
         claims.put("ip", clientIp);
 
-        String refreshToken = createRefreshToken(claims, username, REFRESH_TOKEN_VALIDITY);
-        Date expireTime = new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY * 60 * 1000);
+        String refreshToken = createRefreshToken(claims, username, refreshTokenValidity);
+        Date expireTime = new Date(System.currentTimeMillis() + refreshTokenValidity * 60 * 1000);
 
         RefreshTokenInfo tokenInfo = new RefreshTokenInfo(jti, refreshToken, expireTime, deviceInfo, clientIp);
         userRefreshTokenMap.computeIfAbsent(username, k -> ConcurrentHashMap.newKeySet()).add(tokenInfo);
@@ -400,7 +398,7 @@ public class JwtService {
         private final String refreshToken;
 
         public RefreshTokenInfo(String jti, String refreshToken, Date expireTime,
-                String deviceInfo, String clientIp) {
+                                String deviceInfo, String clientIp) {
             this.jti = jti;
             this.expireTime = expireTime;
             this.deviceInfo = deviceInfo;

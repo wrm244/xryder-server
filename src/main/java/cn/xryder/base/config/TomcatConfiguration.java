@@ -1,5 +1,6 @@
 package cn.xryder.base.config;
 
+import org.apache.coyote.ProtocolHandler;
 import org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,12 +24,8 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class TomcatConfiguration {
 
     @Bean
-    TomcatProtocolHandlerCustomizer<?> protocolHandlerVirtualThreadExecutorCustomizer() {
-
-        return protocolHandler -> {
-            // 使用虚拟线程来处理每一个请求
-            protocolHandler.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
-        };
+    TomcatProtocolHandlerCustomizer<ProtocolHandler> protocolHandlerVirtualThreadExecutorCustomizer() {
+        return protocolHandler -> protocolHandler.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
     }
 
     @Bean
@@ -37,7 +34,8 @@ public class TomcatConfiguration {
                 ServerResponse.ok()
                         .contentType(MediaType.TEXT_EVENT_STREAM)
                         .body(Flux.interval(Duration.ofSeconds(15)).map(seq -> "heartbeat " + seq), String.class)
-                        .timeout(Duration.ofSeconds(60))  // 超时时间设置为 60 秒
+                        // 超时时间设置为 60 秒
+                        .timeout(Duration.ofSeconds(60))
         );
     }
 }

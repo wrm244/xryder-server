@@ -18,6 +18,8 @@ spring:
     username: ryder
     password: 34SWF7Kjyr3MHyHP
   ai:
+    dashscope:
+      api-key: sk-606b7a0e9aa14c288afeb2f920b2a747
     openai:
       api-key: sk-W0rpStc95T7JVYVwDYc29IyirjtpPPby6SozFMQr17m8KWeo
       base-url: https://api.suanli.cn/v1
@@ -37,6 +39,6 @@ jwt:
   # RefreshToken专用密钥 (增强安全性)
   refresh-secret: 457638792F423F4428472B4B62L0E5S368566D597133743677397A2443264630
   # Token有效期配置（分钟）
-  access-token-validity: 3 # AccessToken 3分钟
+  access-token-validity: 1 # AccessToken 3分钟
   refresh-token-validity: 21600 # RefreshToken 15天
   ai-token-validity: 21600 # AI Token 15天

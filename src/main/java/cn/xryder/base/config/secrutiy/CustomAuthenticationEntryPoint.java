@@ -15,7 +15,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * token 为空转到这里
+ * token 为空转到这里/api/v1/ai/stream
  *
  * @author wrm244
  */

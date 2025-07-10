@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.server.ServerWebExchange;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -40,13 +41,20 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain) throws ServletException, IOException {
-
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+            @NonNull FilterChain chain) throws ServletException, IOException {
+        // 检查请求路径是否在白名单中
+        String requestPath = request.getServletPath();
+        if (isWhitelistedPath(requestPath)) {
+            // 白名单路径 - 直接放行
+            chain.doFilter(request, response);
+            return;
+        }
         String token = extractTokenFromRequest(request);
 
         if (StringUtils.isNotBlank(token)) {
             TokenValidationResult result = validateToken(token);
-
+            // 非白名单路径，执行正常的令牌验证逻辑
             if (result == TokenValidationResult.EXPIRED) {
                 // Token过期 - 返回特定的过期响应
                 returnExpiredTokenException(response);
@@ -59,7 +67,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 // Token有效 - 设置认证信息
                 authenticateToken(request, token);
             }
-            // 如果是 NO_TOKEN 或其他情况，继续执行链，让 AuthenticationEntryPoint 处理
         }
 
         chain.doFilter(request, response);
@@ -165,8 +172,26 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Token验证结果枚举
+     * 检查请求路径是否在白名单中
      */
+    private boolean isWhitelistedPath(String requestPath) {
+        // 白名单路径列表
+        return requestPath.equals("/error") ||
+                requestPath.equals("/api/login") ||
+                requestPath.equals("/api/v1/publicKey") ||
+                requestPath.equals("/api/v1/refreshToken") ||
+                requestPath.equals("/api/v1/ai/stream") ||
+                requestPath.startsWith("/api/v1/ai/stream"); // 支持带参数的路径匹配
+    }
+
+    /**
+     * 流名单路径列表
+     */
+    private boolean isSSEPath(String requestPath) {
+        // 白名单路径列表
+        return requestPath.startsWith("/api/v1/ai/stream");
+    }
+
     private enum TokenValidationResult {
         // 有效
         VALID,
